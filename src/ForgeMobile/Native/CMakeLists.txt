@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.22.1)
+project(forge_native LANGUAGES CXX)
+add_library(forge_native SHARED forge_native.cpp)
+target_compile_features(forge_native PRIVATE cxx_std_17)
+target_compile_options(forge_native PRIVATE -Wall -Wextra -Werror)
+find_library(log-lib log)
+target_link_libraries(forge_native ${log-lib})
