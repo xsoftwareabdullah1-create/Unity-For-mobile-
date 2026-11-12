@@ -13,7 +13,7 @@ namespace ForgeMobile;
 
 [Activity(Label = "Clear Game Engine", MainLauncher = true, Theme = "@android:style/Theme.Material.NoActionBar",
     ScreenOrientation = ScreenOrientation.Landscape,
-    ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.KeyboardHidden)]
+    ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.KeyboardHidden, Icon = "@drawable/clear_engine_logo")]
 public sealed class MainActivity : Activity
 {
     private readonly Color _bg = Color.Rgb(16, 20, 28);
@@ -441,6 +441,12 @@ public sealed class MainActivity : Activity
             scroll.AddView(log);
             _dockContent.AddView(scroll, new LinearLayout.LayoutParams(-1, -1));
         }
+    }
+
+    private void OpenModelMaker()
+    {
+        StartActivity(new Android.Content.Intent(this, typeof(ModelMakerActivity)));
+        Log("Opened Model Maker workspace");
     }
 
     private void AddObject(string name, string type)
