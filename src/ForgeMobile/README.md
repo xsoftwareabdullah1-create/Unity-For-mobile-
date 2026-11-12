@@ -25,7 +25,7 @@ Install .NET 9 SDK, Java 17 and the .NET Android workload, then run:
     dotnet restore ForgeMobile.csproj
     dotnet publish ForgeMobile.csproj -c Release -f net9.0-android -p:AndroidPackageFormat=apk -p:AndroidSupportedAbis=arm64-v8a
 
-The GitHub Actions workflow builds on pushes to main and manual dispatch. Download the ForgeMobile-Android-APK artifact after a successful run.
+The GitHub Actions workflow builds on pushes to main and manual dispatch. A successful ARM64 APK build has been verified in run 10; the ForgeMobile-Android-APK artifact was uploaded (about 4.0 MiB). Physical-device installation is not yet verified. Download the artifact from the Actions run page.
 
 ## Project storage
 The app creates ForgeProjects/MyFirstGame inside private app storage:
