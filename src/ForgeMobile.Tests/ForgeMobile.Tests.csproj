@@ -10,4 +10,5 @@
     <Compile Include="../ForgeMobile/Engine/**/*.cs" Link="Engine/%(RecursiveDir)%(Filename)%(Extension)" />
     <Compile Include="../ForgeMobile/ModelMaker/**/*.cs" Link="ModelMaker/%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
+  <ItemGroup><Compile Include="../../*.cs" Link="RootFeatures/%(Filename)%(Extension)" /></ItemGroup>
 </Project>

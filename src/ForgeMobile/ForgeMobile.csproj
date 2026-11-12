@@ -17,4 +17,5 @@
     <!-- Compile the 90 actual feature modules kept at repository root. -->
     <Compile Include="../../*.cs" Link="RootFeatures/%(Filename)%(Extension)" />
   </ItemGroup>
+  <ItemGroup><Compile Include="../../*.cs" Link="RootFeatures/%(Filename)%(Extension)" /></ItemGroup>
 </Project>
