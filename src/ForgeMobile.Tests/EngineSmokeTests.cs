@@ -9,6 +9,7 @@ public static class EngineSmokeTests
 {
     public static void RunAll()
     {
+        ModelMakerSmokeTests.Run();
         var clock = new EngineClock(); clock.Tick(1d / 60d); if (clock.Frame != 1) throw new Exception("Clock failed");
         var mesh = PrimitiveMeshes.Cube(); if (!mesh.IsValid) throw new Exception("Cube mesh failed");
         var source = string.Join((char)10, new[] { "log(hello);", "set(speed, 2);", "move(1);" });
