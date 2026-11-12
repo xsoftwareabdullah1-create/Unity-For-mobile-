@@ -9,6 +9,7 @@
     <SupportedOSPlatformVersion>23.0</SupportedOSPlatformVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>\n    <RuntimeIdentifiers>android-arm64</RuntimeIdentifiers>
+    <AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>
+    <RuntimeIdentifiers>android-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 </Project>
