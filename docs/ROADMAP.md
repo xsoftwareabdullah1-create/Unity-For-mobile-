@@ -10,10 +10,10 @@ Every milestone needs a testable artifact. Source code alone does not mean a fea
 - [x] Local scene JSON persistence.
 - [x] Project, C# source and Console docks.
 - [x] GitHub Actions ARM64 APK workflow added.
-- [ ] CI build passes and APK artifact is verified.
+- [x] CI build passes and APK artifact is verified.
 - [ ] Install and launch on a physical ARM64 phone.
 
-**Exit gate:** successful CI build, downloadable APK and physical-device launch.
+**CI gate passed:** GitHub Actions built and uploaded an ARM64 APK. Physical-device installation and launch are still pending.
 
 ## Phase 2 — Real editor interaction
 - [ ] Responsive panel drawers and tablet layout.
