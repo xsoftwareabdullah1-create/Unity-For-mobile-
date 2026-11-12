@@ -16,11 +16,11 @@ namespace ForgeMobile;
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.KeyboardHidden)]
 public sealed class MainActivity : Activity
 {
-    private readonly int _bg = Color.Rgb(16, 20, 28);
-    private readonly int _panel = Color.Rgb(27, 33, 44);
-    private readonly int _panel2 = Color.Rgb(35, 43, 56);
-    private readonly int _text = Color.Rgb(232, 238, 247);
-    private readonly int _muted = Color.Rgb(150, 164, 184);
+    private readonly Color _bg = Color.Rgb(16, 20, 28);
+    private readonly Color _panel = Color.Rgb(27, 33, 44);
+    private readonly Color _panel2 = Color.Rgb(35, 43, 56);
+    private readonly Color _text = Color.Rgb(232, 238, 247);
+    private readonly Color _muted = Color.Rgb(150, 164, 184);
     private ProjectStore _store = null!;
     private SceneDocument _scene = null!;
     private SceneDocument? _playSnapshot;
@@ -56,7 +56,7 @@ public sealed class MainActivity : Activity
         root.SetBackgroundColor(_bg);
         SetContentView(root);
 
-        var header = new LinearLayout(this) { Orientation = Orientation.Horizontal, Gravity = GravityFlags.CenterVertical };
+        var header = new LinearLayout(this) { Orientation = Orientation.Horizontal };\n        header.SetGravity(GravityFlags.CenterVertical);
         header.SetPadding(Dp(12), Dp(5), Dp(8), Dp(5));
         header.SetBackgroundColor(Color.Rgb(12, 16, 23));
         header.AddView(Label("FORGE", 19, _text, true), new LinearLayout.LayoutParams(Dp(75), Dp(42)));
@@ -72,7 +72,7 @@ public sealed class MainActivity : Activity
         header.AddView(Button("SAVE", Save), Wrap());
         root.AddView(header, new LinearLayout.LayoutParams(-1, Dp(52)));
 
-        var tools = new LinearLayout(this) { Orientation = Orientation.Horizontal, Gravity = GravityFlags.CenterVertical };
+        var tools = new LinearLayout(this) { Orientation = Orientation.Horizontal };\n        tools.SetGravity(GravityFlags.CenterVertical);
         tools.SetPadding(Dp(8), Dp(3), Dp(8), Dp(3));
         tools.SetBackgroundColor(_panel);
         tools.AddView(Label("TOOLS", 10, _muted, true), Wrap());
@@ -142,7 +142,7 @@ public sealed class MainActivity : Activity
         _hierarchyList.RemoveAllViews();
         foreach (var item in _scene.Objects)
         {
-            var row = new LinearLayout(this) { Orientation = Orientation.Horizontal, Gravity = GravityFlags.CenterVertical };
+            var row = new LinearLayout(this) { Orientation = Orientation.Horizontal };\n            row.SetGravity(GravityFlags.CenterVertical);
             row.SetPadding(Dp(7), 0, Dp(3), 0);
             row.SetBackgroundColor(item.Id == _selectedId ? Color.Rgb(43, 68, 103) : _panel);
             row.AddView(Label(item.Type switch { "Camera" => "◉", "Light" => "☼", "Mesh" => "◇", _ => "□" }, 14, Color.Rgb(90, 165, 255)), new LinearLayout.LayoutParams(Dp(23), Dp(34)));
@@ -158,7 +158,7 @@ public sealed class MainActivity : Activity
         var item = _scene.Find(_selectedId);
         if (item is null) { _inspector.AddView(Label("Select an object", 12, _muted)); return; }
         InspectorHeading("OBJECT");
-        var name = new EditText(this) { Text = item.Name, SingleLine = true, TextSize = 12 };
+        var name = new EditText(this) { Text = item.Name, TextSize = 12 };\n        name.SetSingleLine(true);
         name.SetTextColor(_text);
         name.SetPadding(Dp(7), 0, Dp(7), 0);
         name.SetBackgroundColor(_panel2);
@@ -199,8 +199,8 @@ public sealed class MainActivity : Activity
 
     private EditText NumberField(float value)
     {
-        var field = new EditText(this) { Text = value.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture), SingleLine = true, InputType = Android.Text.InputTypes.ClassNumber | Android.Text.InputTypes.NumberFlagDecimal | Android.Text.InputTypes.NumberFlagSigned, TextSize = 11 };
-        field.SetTextColor(_text);
+        var field = new EditText(this) { Text = value.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture), InputType = Android.Text.InputTypes.ClassNumber | Android.Text.InputTypes.NumberFlagDecimal | Android.Text.InputTypes.NumberFlagSigned, TextSize = 11 };
+        field.SetSingleLine(true);\n        field.SetTextColor(_text);
         field.SetBackgroundColor(_panel2);
         field.SetPadding(Dp(5), 0, Dp(3), 0);
         return field;
@@ -229,7 +229,7 @@ public sealed class MainActivity : Activity
         else if (tab == "SCRIPTS")
         {
             var top = new LinearLayout(this) { Orientation = Orientation.Horizontal };
-            _scriptName = new EditText(this) { Text = "SpinBehaviour", SingleLine = true, TextSize = 11 };
+            _scriptName = new EditText(this) { Text = "SpinBehaviour", TextSize = 11 };\n            _scriptName.SetSingleLine(true);
             _scriptName.SetTextColor(_text);
             top.AddView(_scriptName, new LinearLayout.LayoutParams(Dp(155), Dp(36)));
             top.AddView(Button("SAVE .CS", SaveScript), Wrap());
@@ -323,7 +323,7 @@ public sealed class MainActivity : Activity
     private void SaveScript()
     {
         var path = _store.SaveScript(_scriptName?.Text ?? "NewScript", _scriptEditor?.Text ?? ProjectStore.StarterScript);
-        Log("Saved C# source: " + Path.GetFileName(path));
+        Log("Saved C# source: " + System.IO.Path.GetFileName(path));
     }
 
     private void Log(string message)
