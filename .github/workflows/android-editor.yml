@@ -1,4 +1,4 @@
-name: Forge Mobile Android APK
+name: Clear Game Engine Android APK and AAB
 
 on:
   push:
@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   build-android:
-    name: Build ARM64 Android APK
+    name: Build ARM64 Android APK and AAB
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -50,12 +50,35 @@ jobs:
           APK="$(find artifacts/apk -maxdepth 2 -type f -name '*.apk' | head -n 1)"
           test -n "$APK"
           mkdir -p output
-          cp "$APK" output/ForgeMobile.apk
-          ls -lh output/ForgeMobile.apk
+          cp "$APK" output/ClearGameEngine.apk
+          ls -lh output/ClearGameEngine.apk
+      - name: Build Android App Bundle
+        run: >-
+          dotnet publish src/ForgeMobile/ForgeMobile.csproj
+          --configuration Release
+          --framework net10.0-android
+          -p:AndroidPackageFormat=aab
+          --output artifacts/aab
+      - name: Locate AAB
+        shell: bash
+        run: |
+          set -euo pipefail
+          AAB="$(find artifacts/aab -maxdepth 2 -type f -name '*.aab' | head -n 1)"
+          test -n "$AAB"
+          cp "$AAB" output/ClearGameEngine.aab
+          ls -lh output/ClearGameEngine.aab
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ForgeMobile-Android-APK
-          path: output/ForgeMobile.apk
+          name: ClearGameEngine-Android-APK
+          path: output/ClearGameEngine.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ClearGameEngine-Android-AAB
+          path: output/ClearGameEngine.aab
           if-no-files-found: error
           retention-days: 14

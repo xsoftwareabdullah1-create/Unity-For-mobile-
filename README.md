@@ -1,55 +1,46 @@
-# Forge Mobile — Unity-inspired Android Game Editor
+# Clear Game Engine
 
-Forge Mobile is an independent, mobile-first game editor and engine foundation. It is inspired by professional Unity-style workflows, but it is not Unity and contains no Unity proprietary source or assets.
+This is my Android-first game editor project. I want the workspace to feel familiar to people who have used desktop game engines: scene in the centre, hierarchy on the left, Inspector on the right, and project tools below.
 
-## Current editor
+It is an independent project, not Unity or Blender, and it does not contain their proprietary code or assets.
 
-- Landscape editor workspace with Hierarchy, Scene and Inspector.
-- Scrollable Inspector with object metadata, custom key/value metadata, transform fields, components and renderer information.
-- Create, duplicate and delete scene objects.
-- Edit position, rotation, scale, tag, layer, active and static flags.
-- Local JSON scene persistence.
-- Project, Console and C# source docks.
-- Dark graphite/blue theme and touch-sized outlined controls.
+## What currently works
 
-## Engine modules added
+- Landscape editor with Hierarchy, Scene, Inspector, Project, Console and script panels.
+- Create, select, duplicate and delete scene objects.
+- Edit object name, tag, layer, custom metadata, active/static flags and transforms.
+- Save scenes locally as JSON.
+- Engine foundations for scene data, mesh data, camera maths, basic physics data, asset indexing and a restricted safe script VM.
+- A first Model Maker workspace is being added for primitive meshes and OBJ/STL export.
 
-More than 120 source and support files have been added under `src/ForgeMobile/Engine`:
+## Android downloads
 
-- **Core:** clock, event bus, scheduler, service container, logging, validation.
-- **Scene:** entity graph, transforms, components, cameras, lights, mesh/material descriptors, serialization and validation.
-- **Rendering foundation:** primitive cube/plane mesh data, camera projection math, orbit controller, grid builder, picking ray, render queue and resource descriptors.
-- **Physics foundation:** rigid-body integration, collider types and material settings.
-- **Scripting:** a safe, restricted command VM with `log`, `set` and `move` instructions.
-- **Assets:** asset database, extension classification, dependency graph and search index.
-- **Editor:** Inspector metadata models, selection, tools, undo history, console, layout, themes and preferences.
-- **Input, audio, animation and Android build-profile models.**
-- **Native:** C++17 JNI sample source and CMake definition.
+The GitHub Actions workflow builds both an installable **APK** and an **AAB**. Open [Actions](../../actions/workflows/android-editor.yml), select the latest successful run, and download the artifact. Workflow artifacts are retained for 14 days.
 
-## Build and tests
+## Build locally
 
-The GitHub Actions workflow runs dependency-free engine smoke tests, then builds an ARM64 Android APK.
+You need .NET 10, Java 17 and the .NET Android workload.
 
-Local prerequisites: .NET 10 SDK, Java 17 and the .NET Android workload.
-
-```bash
+```sh
 dotnet run --project src/ForgeMobile.Tests/ForgeMobile.Tests.csproj -c Release
 dotnet workload install android
 dotnet restore src/ForgeMobile/ForgeMobile.csproj
 dotnet publish src/ForgeMobile/ForgeMobile.csproj -c Release -f net10.0-android -p:AndroidPackageFormat=apk --output artifacts/apk
+dotnet publish src/ForgeMobile/ForgeMobile.csproj -c Release -f net10.0-android -p:AndroidPackageFormat=aab --output artifacts/aab
 ```
 
-Open the repository's **Actions** tab and download `ForgeMobile-Android-APK` after a successful run.
+## Model and game exports
 
-## Important implementation limits
+The first model tool supports OBJ and ASCII STL. glTF/GLB, FBX and PLY need their own tested serializers and are not advertised as available yet.
 
-This is a growing engine project, not a complete Unity replacement yet.
+Windows EXE, macOS DMG, Linux packages and WebAssembly game exports are not available from this Android-only project. Those need desktop/web runtime targets, platform toolchains, packaging and tests. An editor APK is not a universal game exporter.
 
-- The current Android Scene View still uses a Canvas preview; the GPU renderer is not wired up yet. Rendering classes added so far are engine-side data/math/command foundations.
-- The script VM is a deliberately restricted safe command language. It does not compile or execute arbitrary C#.
-- C++ JNI/CMake sample source is present, but NDK build and APK packaging integration are not yet complete.
-- Physics currently provides basic rigid-body integration and collider data, not a full collision solver.
-- Audio and animation modules are data/timing foundations, not full device playback/rendering systems.
-- Standalone game APK export is not implemented yet.
+## About app size
 
-See `docs/ENGINE_STATUS.md`, `docs/ROADMAP.md` and `docs/METADATA_INSPECTOR.md` for exact status and next milestones.
+I am not adding filler files or fake assets to force the APK to 200–250 MB. The app should only grow when real engine code, libraries, sample projects and optional content justify it. A bloated install would waste phone storage and mobile data.
+
+## What is still unfinished
+
+The Scene View is currently a Canvas preview, not a production OpenGL ES renderer. The safe script VM is not a full C# compiler. The C++ JNI sample is not an in-app C++ build pipeline. Physics, audio and animation are foundations rather than full Unity-equivalent systems.
+
+The plan is to keep each milestone buildable and test real features as they are added.

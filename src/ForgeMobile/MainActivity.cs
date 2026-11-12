@@ -11,7 +11,7 @@ using ForgeMobile.Services;
 
 namespace ForgeMobile;
 
-[Activity(Label = "Forge Mobile", MainLauncher = true, Theme = "@android:style/Theme.Material.NoActionBar",
+[Activity(Label = "Clear Game Engine", MainLauncher = true, Theme = "@android:style/Theme.Material.NoActionBar",
     ScreenOrientation = ScreenOrientation.Landscape,
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.KeyboardHidden)]
 public sealed class MainActivity : Activity
@@ -46,7 +46,7 @@ public sealed class MainActivity : Activity
         _scene = _store.LoadScene();
         _selectedId = _scene.Objects.LastOrDefault()?.Id ?? "";
         BuildEditor();
-        Log("Forge Mobile editor initialized.");
+        Log("Clear Game Engine editor initialized.");
         Log("Project: MyFirstGame");
     }
 
@@ -61,10 +61,10 @@ public sealed class MainActivity : Activity
         menu.SetGravity(GravityFlags.CenterVertical);
         menu.SetPadding(Dp(8), 0, Dp(6), 0);
         menu.SetBackgroundColor(Color.Rgb(20, 23, 29));
-        menu.AddView(Label("FORGE", 15, Color.Rgb(105, 170, 255), true), new LinearLayout.LayoutParams(Dp(66), Dp(30)));
+        menu.AddView(Label("CLEAR", 15, Color.Rgb(105, 170, 255), true), new LinearLayout.LayoutParams(Dp(66), Dp(30)));
         foreach (var item in new[] { "File", "Edit", "Assets", "GameObject", "Component", "Window", "Help" })
             menu.AddView(Button(item, () => OpenMenu(item)), new LinearLayout.LayoutParams(-2, Dp(27)) { RightMargin = Dp(2) });
-        menu.AddView(Label("MyFirstGame  •  Android Editor", 9, _muted), new LinearLayout.LayoutParams(0, Dp(30), 1));
+        menu.AddView(Label("Clear Game Engine  •  Android Editor", 9, _muted), new LinearLayout.LayoutParams(0, Dp(30), 1));
         root.AddView(menu, new LinearLayout.LayoutParams(-1, Dp(31)));
 
         var transport = new LinearLayout(this) { Orientation = Orientation.Horizontal };
@@ -78,6 +78,7 @@ public sealed class MainActivity : Activity
         transport.AddView(new View(this), new LinearLayout.LayoutParams(Dp(1), Dp(22)) { LeftMargin = Dp(8), RightMargin = Dp(8) });
         transport.AddView(Button("＋ CUBE", () => AddObject("Cube", "Mesh")), Wrap());
         transport.AddView(Button("＋ EMPTY", () => AddObject("GameObject", "Empty")), Wrap());
+        transport.AddView(Button("MODEL MAKER", OpenModelMaker), Wrap());
         transport.AddView(Button("SAVE", Save), Wrap());
         transport.AddView(new View(this), new LinearLayout.LayoutParams(0, 1, 1));
         transport.AddView(Label("LAYOUT: DEFAULT", 9, _muted), Wrap());
@@ -193,7 +194,7 @@ public sealed class MainActivity : Activity
                 case "Refresh Assets": ShowDock("PROJECT"); Log("Asset list refreshed"); break;
                 case "Project Settings": Log("Project settings panel is planned"); break;
                 case "Build Settings": Log("Android build settings are planned"); break;
-                case "About": Log("Forge Mobile — independent Unity-inspired editor"); break;
+                case "About": Log("Clear Game Engine — independent mobile game editor"); break;
                 default: Log(choice + " is not implemented yet"); break;
             }
         }).Show();
