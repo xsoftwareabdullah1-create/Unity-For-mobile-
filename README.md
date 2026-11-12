@@ -1,48 +1,58 @@
 # Unity-Style Mobile Game Engine
 
-A mobile-first game creation environment inspired by the workflow of Unity Editor. The goal is to let creators build, test, and package 2D and 3D Android games directly from a touchscreen device.
+An independent, mobile-first game creation environment inspired by professional game-editor workflows. The target is to let creators build and test 2D/3D Android games from a touchscreen device.
 
-> This is an independent engine project. It will use an original implementation and original assets; it is not Unity, does not include Unity source code, and will not copy Unity's proprietary branding or assets.
+This is not Unity and contains no Unity source code or proprietary assets.
 
-## Target experience
+## Current app: Forge Mobile
 
-- Dark, dockable editor layout adapted for phone and tablet screens.
-- Scene and Game views, Hierarchy, Inspector, Project/Assets, Console and Play/Pause/Step controls.
-- Touch-first object selection, transform gizmos, camera orbit/pan/zoom, drag-and-drop and searchable component menus.
-- 2D and 3D scenes, materials, lights, cameras, audio, animation and physics.
-- C# gameplay scripting and native C++ extension modules.
-- Android APK export, with desktop/iOS considered only after the Android pipeline is stable.
+The first Android editor prototype lives in src/ForgeMobile.
 
-## Language support
+- Dark landscape editor shell with Hierarchy, Scene Preview and Inspector.
+- Add Cube / Empty, duplicate, delete and edit object transforms.
+- Local JSON scene saving.
+- Play/Stop scene snapshot, Pause and Step editor controls.
+- Project, C# Scripts and Console docks.
+- C# source editor that saves script files.
+- Starter C++ NDK module source and native ABI notes.
+- GitHub Actions ARM64 APK build.
 
-- **C#**: primary gameplay and editor/engine code.
-- **C++**: native engine modules and performance-sensitive extensions through the Android NDK/JNI boundary.
-- **GLSL**: shaders.
-- **Visual scripting**: planned node graph for creators who prefer not to type code.
+**Prototype limits:** the viewport is currently a Canvas wireframe preview, not a GPU 3D renderer. Play Mode is an editor-state prototype, not a running game runtime. C# and C++ files can be edited/stored, but are not compiled or executed yet.
 
-Important Android runtime constraint: arbitrary Roslyn compilation and dynamic assembly loading cannot be assumed to work on every Android/AOT configuration. The implementation must validate a supported C# scripting strategy on-device (precompiled script assemblies or an explicitly supported interpreter/compiler path) before advertising instant compile-and-run. C++ compilation will require a compatible NDK toolchain and must be treated separately from in-app script execution.
+## Language plan
 
-## Development status
+- **C#** — primary engine and gameplay language; Android-compatible scripting execution is still to be selected and device-tested.
+- **C++** — native modules built with Android NDK and connected through a versioned JNI/C ABI.
+- **GLSL** — rendering shaders.
+- **Visual scripting** — planned node-based authoring.
 
-The repository was empty at project start. This commit establishes the architecture and phased implementation plan; it is not yet a functioning game engine and does not produce an APK.
+Arbitrary C# runtime compilation and arbitrary native library loading are not assumed to work on Android. Those capabilities require a verified, secure implementation.
 
-1. **Foundation** — architecture, editor shell, project format and Android build pipeline.
-2. **Editor core** — Hierarchy, Inspector, asset browser, Console and project persistence.
-3. **Rendering** — 2D/3D viewport, camera controls, grid and selection.
-4. **Scene/runtime** — entities, components, lifecycle, play-mode isolation.
-5. **Scripting** — verified C# workflow and C++ native module interface.
-6. **Creation tools** — physics, audio, animation, materials, prefabs and visual scripting.
-7. **Packaging** — reproducible Android APK export and sample projects.
+## Repository structure
 
-## Current documentation
+- src/ForgeMobile/ — Android application and editor prototype.
+- docs/ARCHITECTURE.md — technical boundaries and design.
+- docs/ROADMAP.md — milestones and acceptance gates.
+- .github/workflows/android-editor.yml — CI APK build.
 
-- [Architecture and technical decisions](docs/ARCHITECTURE.md)
-- [Roadmap and acceptance criteria](docs/ROADMAP.md)
+## Build
 
-## Build status
+GitHub Actions builds an ARM64 APK on pushes affecting the Android project, and on manual workflow dispatch. Open the Actions tab and download the ForgeMobile-Android-APK artifact after a successful run.
 
-No application source or APK is included yet. Build automation will be added with the first compilable Android application rather than creating a misleading workflow that claims to build a nonexistent project.
+Local build prerequisites: .NET 9 SDK, Java 17 and the .NET Android workload.
 
-## License
+    dotnet workload install android
+    dotnet restore src/ForgeMobile/ForgeMobile.csproj
+    dotnet publish src/ForgeMobile/ForgeMobile.csproj -c Release -f net9.0-android -p:AndroidPackageFormat=apk -p:AndroidSupportedAbis=arm64-v8a
 
-A license will be selected before distributing engine binaries or bundled third-party dependencies. Third-party libraries retain their own licenses.
+## Roadmap
+
+1. Stabilize the Android editor and CI build.
+2. Add a real OpenGL ES scene renderer and touch camera controls.
+3. Implement entity/component runtime and actual Play Mode execution.
+4. Validate C# scripting on ARM64 Android.
+5. Add the Android NDK C++ build and native module bridge.
+6. Add physics, audio, animation, materials, asset import and visual scripting.
+7. Export standalone Android game APKs.
+
+See Architecture and Roadmap documents in docs/.
