@@ -80,14 +80,14 @@ public sealed class SceneViewport : View
         _paint.Color = Color.Rgb(95, 105, 116);
         canvas.DrawPath(leftFace, _paint);
 
-        var rightFace = new Path();
+        var rightFace = new Android.Graphics.Path();
         rightFace.MoveTo(p0.X, p0.Y); rightFace.LineTo(p1.X, p1.Y);
         rightFace.LineTo(p2.X, p2.Y); rightFace.LineTo(q2.X, q2.Y);
         rightFace.LineTo(q0.X, q0.Y); rightFace.Close();
         _paint.Color = Color.Rgb(46, 54, 64);
         canvas.DrawPath(rightFace, _paint);
 
-        var topFace = new Path();
+        var topFace = new Android.Graphics.Path();
         topFace.MoveTo(p0.X, p0.Y); topFace.LineTo(p1.X, p1.Y);
         topFace.LineTo(q1.X, q1.Y); topFace.LineTo(q0.X, q0.Y);
         topFace.Close();

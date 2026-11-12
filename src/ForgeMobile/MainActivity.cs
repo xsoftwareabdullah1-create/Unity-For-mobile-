@@ -133,7 +133,7 @@ public sealed class MainActivity : Activity
         var inspectorScroll = new ScrollView(this);
         inspectorScroll.AddView(_inspector);
         inspectorPanel.AddView(inspectorScroll, new LinearLayout.LayoutParams(-1, 0, 1));
-        workspace.AddView(inspectorPanel, new LinearLayout.LayoutParams(Dp(232), -1));
+        workspace.AddView(inspectorPanel, new LinearLayout.LayoutParams(Dp(285), -1));
 
         var dock = new LinearLayout(this) { Orientation = Orientation.Vertical };
         dock.SetBackgroundColor(Color.Rgb(25, 29, 37));
@@ -244,74 +244,129 @@ public sealed class MainActivity : Activity
         var item = _scene.Find(_selectedId);
         if (item is null) { _inspector.AddView(Label("Select an object", 12, _muted)); return; }
 
-        InspectorHeading("GAMEOBJECT");
-        var name = new EditText(this) { Text = item.Name, TextSize = 12 };
-        name.SetSingleLine(true);
-        name.SetTextColor(_text);
-        name.SetPadding(Dp(7), 0, Dp(7), 0);
-        name.SetBackgroundColor(_panel2);
-        _inspector.AddView(name, new LinearLayout.LayoutParams(-1, Dp(38)));
+        InspectorHeading("◈  GAMEOBJECT");
+        var name = InspectorTextField("Name", item.Name);
+        _inspector.AddView(Label("OBJECT TYPE   " + item.Type.ToUpperInvariant(), 9, Color.Rgb(110, 174, 255)), new LinearLayout.LayoutParams(-1, Dp(26)));
+        _inspector.AddView(Label("ID   " + item.Id, 8, _muted), new LinearLayout.LayoutParams(-1, Dp(24)));
 
-        InspectorHeading("METADATA");
-        var tag = new EditText(this) { Text = item.Tag, Hint = "Tag", TextSize = 11 };
-        tag.SetSingleLine(true); tag.SetTextColor(_text); tag.SetHintTextColor(_muted); tag.SetBackgroundColor(_panel2);
-        _inspector.AddView(tag, new LinearLayout.LayoutParams(-1, Dp(36)));
-        var layer = new EditText(this) { Text = item.Layer, Hint = "Layer", TextSize = 11 };
-        layer.SetSingleLine(true); layer.SetTextColor(_text); layer.SetHintTextColor(_muted); layer.SetBackgroundColor(_panel2);
-        _inspector.AddView(layer, new LinearLayout.LayoutParams(-1, Dp(36)));
+        InspectorHeading("▦  METADATA");
+        var tag = InspectorTextField("Tag", item.Tag);
+        var layer = InspectorTextField("Layer", item.Layer);
         var enabled = new CheckBox(this) { Text = "Active", Checked = item.Enabled, TextSize = 11 };
-        enabled.SetTextColor(_text); _inspector.AddView(enabled, new LinearLayout.LayoutParams(-1, Dp(34)));
         var isStatic = new CheckBox(this) { Text = "Static", Checked = item.IsStatic, TextSize = 11 };
-        isStatic.SetTextColor(_text); _inspector.AddView(isStatic, new LinearLayout.LayoutParams(-1, Dp(34)));
-        _inspector.AddView(Label("Type: " + item.Type + "    ID: " + item.Id[..Math.Min(8, item.Id.Length)], 9, _muted),
-            new LinearLayout.LayoutParams(-1, Dp(25)));
+        enabled.SetTextColor(_text); isStatic.SetTextColor(_text);
+        var flags = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+        flags.SetGravity(GravityFlags.CenterVertical);
+        flags.AddView(enabled, new LinearLayout.LayoutParams(0, Dp(36), 1));
+        flags.AddView(isStatic, new LinearLayout.LayoutParams(0, Dp(36), 1));
+        _inspector.AddView(flags, new LinearLayout.LayoutParams(-1, Dp(38)));
 
-        InspectorHeading("TRANSFORM");
+        InspectorHeading("⌘  CUSTOM METADATA");
+        var metadataEditors = new List<(EditText Key, EditText Value)>();
+        foreach (var entry in item.Metadata.OrderBy(x => x.Key))
+        {
+            var row = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+            row.SetGravity(GravityFlags.CenterVertical);
+            var key = CompactField(entry.Key, 10);
+            var value = CompactField(entry.Value, 10);
+            row.AddView(key, new LinearLayout.LayoutParams(0, Dp(36), .85f));
+            row.AddView(value, new LinearLayout.LayoutParams(0, Dp(36), 1.15f) { LeftMargin = Dp(4) });
+            _inspector.AddView(row, new LinearLayout.LayoutParams(-1, Dp(40)));
+            metadataEditors.Add((key, value));
+        }
+        _inspector.AddView(Button("+ ADD METADATA FIELD", () =>
+        {
+            var key = "Custom_" + (item.Metadata.Count + 1);
+            while (item.Metadata.ContainsKey(key)) key += "_";
+            item.Metadata[key] = "";
+            RefreshInspector();
+        }), new LinearLayout.LayoutParams(-1, Dp(38)));
+
+        InspectorHeading("⛶  TRANSFORM");
         var pX = NumberField(item.Transform.X); var pY = NumberField(item.Transform.Y); var pZ = NumberField(item.Transform.Z);
-        AxisRow("Position X", pX); AxisRow("Position Y", pY); AxisRow("Position Z", pZ);
+        AxisRow("POSITION", pX, pY, pZ);
         var rX = NumberField(item.Transform.RotationX); var rY = NumberField(item.Transform.RotationY); var rZ = NumberField(item.Transform.RotationZ);
-        AxisRow("Rotation X", rX); AxisRow("Rotation Y", rY); AxisRow("Rotation Z", rZ);
+        AxisRow("ROTATION", rX, rY, rZ);
         var sX = NumberField(item.Transform.ScaleX); var sY = NumberField(item.Transform.ScaleY); var sZ = NumberField(item.Transform.ScaleZ);
-        AxisRow("Scale X", sX); AxisRow("Scale Y", sY); AxisRow("Scale Z", sZ);
+        AxisRow("SCALE", sX, sY, sZ);
 
-        _inspector.AddView(Button("APPLY ALL PROPERTIES", () =>
+        _inspector.AddView(Button("✓  APPLY ALL PROPERTIES", () =>
         {
             item.Name = string.IsNullOrWhiteSpace(name.Text) ? "GameObject" : name.Text.Trim();
             item.Tag = string.IsNullOrWhiteSpace(tag.Text) ? "Untagged" : tag.Text.Trim();
             item.Layer = string.IsNullOrWhiteSpace(layer.Text) ? "Default" : layer.Text.Trim();
             item.Enabled = enabled.Checked; item.IsStatic = isStatic.Checked;
+            item.Metadata.Clear();
+            foreach (var pair in metadataEditors)
+            {
+                var key = pair.Key.Text?.Trim();
+                if (!string.IsNullOrWhiteSpace(key)) item.Metadata[key] = pair.Value.Text ?? "";
+            }
             item.Transform.X = Parse(pX.Text, item.Transform.X); item.Transform.Y = Parse(pY.Text, item.Transform.Y); item.Transform.Z = Parse(pZ.Text, item.Transform.Z);
             item.Transform.RotationX = Parse(rX.Text, item.Transform.RotationX); item.Transform.RotationY = Parse(rY.Text, item.Transform.RotationY); item.Transform.RotationZ = Parse(rZ.Text, item.Transform.RotationZ);
             item.Transform.ScaleX = Parse(sX.Text, item.Transform.ScaleX); item.Transform.ScaleY = Parse(sY.Text, item.Transform.ScaleY); item.Transform.ScaleZ = Parse(sZ.Text, item.Transform.ScaleZ);
             _viewport.SelectedName = item.Name; _viewport.Invalidate();
-            RefreshHierarchy(); Log("Applied metadata and transform to " + item.Name);
-        }), new LinearLayout.LayoutParams(-1, Dp(40)));
+            RefreshHierarchy(); Log("Applied Inspector properties to " + item.Name);
+        }), new LinearLayout.LayoutParams(-1, Dp(42)));
 
-        InspectorHeading("COMPONENTS (" + item.Components.Count + ")");
+        InspectorHeading("▤  COMPONENTS  (" + item.Components.Count + ")");
         foreach (var component in item.Components.ToArray())
         {
             var card = new LinearLayout(this) { Orientation = Orientation.Horizontal };
-            card.SetGravity(GravityFlags.CenterVertical); card.SetPadding(Dp(7), 0, Dp(4), 0);
+            card.SetGravity(GravityFlags.CenterVertical); card.SetPadding(Dp(8), 0, Dp(5), 0);
             card.SetBackgroundColor(_panel2);
-            card.AddView(Label("◈  " + component, 11, _text), new LinearLayout.LayoutParams(0, Dp(38), 1));
+            card.AddView(Label("◆   " + component, 11, _text, true), new LinearLayout.LayoutParams(0, Dp(40), 1));
             if (component != "Transform")
                 card.AddView(Button("REMOVE", () => { item.Components.Remove(component); RefreshInspector(); Log("Removed " + component); }), Wrap());
-            _inspector.AddView(card, new LinearLayout.LayoutParams(-1, Dp(40)));
+            _inspector.AddView(card, new LinearLayout.LayoutParams(-1, Dp(42)) { BottomMargin = Dp(3) });
         }
         _inspector.AddView(Button("+ ADD COMPONENT", () => ShowAddComponent(item)), new LinearLayout.LayoutParams(-1, Dp(40)));
-        InspectorHeading("RENDERER SETTINGS");
-        _inspector.AddView(Label("Material: Default-Material", 10, _muted), new LinearLayout.LayoutParams(-1, Dp(30)));
-        _inspector.AddView(Label("Cast Shadows: On    Receive Shadows: On", 9, _muted), new LinearLayout.LayoutParams(-1, Dp(28)));
-        InspectorHeading("OBJECT INFORMATION");
-        _inspector.AddView(Label("Parent: " + (string.IsNullOrEmpty(item.ParentId) ? "Scene Root" : item.ParentId), 9, _muted), new LinearLayout.LayoutParams(-1, Dp(26)));
-        _inspector.AddView(Label("Scene: " + _scene.Name, 9, _muted), new LinearLayout.LayoutParams(-1, Dp(26)));
+
+        InspectorHeading("◈  RENDERER SETTINGS");
+        _inspector.AddView(Label("Material", 9, _muted), new LinearLayout.LayoutParams(-1, Dp(22)));
+        _inspector.AddView(Label("Default-Material   •   Standard Shader", 10, _text), new LinearLayout.LayoutParams(-1, Dp(30)));
+        _inspector.AddView(Label("Cast Shadows: On     Receive Shadows: On", 9, _muted), new LinearLayout.LayoutParams(-1, Dp(28)));
+
+        InspectorHeading("ⓘ  OBJECT INFORMATION");
+        _inspector.AddView(Label("Parent   " + (string.IsNullOrEmpty(item.ParentId) ? "Scene Root" : item.ParentId), 9, _muted), new LinearLayout.LayoutParams(-1, Dp(26)));
+        _inspector.AddView(Label("Scene   " + _scene.Name, 9, _muted), new LinearLayout.LayoutParams(-1, Dp(26)));
+        _inspector.AddView(Label("Modified   " + _scene.ModifiedUtc.ToLocalTime().ToString("g"), 9, _muted), new LinearLayout.LayoutParams(-1, Dp(26)));
+    }
+
+    private EditText InspectorTextField(string label, string value)
+    {
+        _inspector.AddView(Label(label.ToUpperInvariant(), 9, _muted, true), new LinearLayout.LayoutParams(-1, Dp(22)));
+        var field = CompactField(value, 11);
+        _inspector.AddView(field, new LinearLayout.LayoutParams(-1, Dp(36)) { BottomMargin = Dp(4) });
+        return field;
+    }
+
+    private EditText CompactField(string value, float size)
+    {
+        var field = new EditText(this) { Text = value, TextSize = size };
+        field.SetSingleLine(true);
+        field.SetTextColor(_text);
+        field.SetHintTextColor(_muted);
+        field.SetPadding(Dp(8), 0, Dp(6), 0);
+        var shape = new GradientDrawable();
+        shape.SetColor(Color.Rgb(25, 31, 41));
+        shape.SetCornerRadius(Dp(5));
+        shape.SetStroke(Dp(1), Color.Rgb(58, 72, 91));
+        field.Background = shape;
+        return field;
     }
 
     private void InspectorHeading(string value)
     {
-        var label = Label(value, 9, _muted, true);
-        label.SetPadding(Dp(6), Dp(5), 0, 0);
-        _inspector.AddView(label, new LinearLayout.LayoutParams(-1, Dp(27)));
+        var row = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+        row.SetGravity(GravityFlags.CenterVertical);
+        row.SetPadding(Dp(7), 0, Dp(4), 0);
+        row.SetBackgroundColor(Color.Rgb(31, 42, 57));
+        var accent = new View(this);
+        accent.SetBackgroundColor(Color.Rgb(78, 153, 255));
+        row.AddView(accent, new LinearLayout.LayoutParams(Dp(3), Dp(17)) { RightMargin = Dp(7) });
+        row.AddView(Label(value, 9, Color.Rgb(183, 205, 232), true), new LinearLayout.LayoutParams(-1, Dp(30)));
+        _inspector.AddView(row, new LinearLayout.LayoutParams(-1, Dp(33)) { TopMargin = Dp(5), BottomMargin = Dp(3) });
     }
 
     private EditText NumberField(float value)
@@ -324,13 +379,14 @@ public sealed class MainActivity : Activity
         return field;
     }
 
-    private void AxisRow(string axis, EditText field)
+    private void AxisRow(string axis, EditText x, EditText y, EditText z)
     {
         var row = new LinearLayout(this) { Orientation = Orientation.Horizontal };
         row.SetGravity(GravityFlags.CenterVertical);
-        row.AddView(Label(axis, 9, _muted, true), new LinearLayout.LayoutParams(Dp(72), Dp(34)));
-        row.AddView(field, new LinearLayout.LayoutParams(0, Dp(34), 1));
-        _inspector.AddView(row, new LinearLayout.LayoutParams(-1, Dp(37)));
+        row.AddView(Label(axis, 8, _muted, true), new LinearLayout.LayoutParams(Dp(62), Dp(34)));
+        foreach (var field in new[] { x, y, z })
+            row.AddView(field, new LinearLayout.LayoutParams(0, Dp(34), 1) { RightMargin = Dp(3) });
+        _inspector.AddView(row, new LinearLayout.LayoutParams(-1, Dp(38)));
     }
 
     private void ShowDock(string tab)
