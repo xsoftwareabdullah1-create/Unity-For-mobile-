@@ -75,7 +75,7 @@ public sealed class ModelMakerActivity:Activity
             var dir=System.IO.Path.Combine(FilesDir!.AbsolutePath,"ClearGameEngine","Exports");Directory.CreateDirectory(dir);
             var ext=obj?"obj":"stl";var path=System.IO.Path.Combine(dir,"Model_"+DateTime.Now.ToString("yyyyMMdd_HHmmss")+"."+ext);
             if(obj)ModelExporter.WriteObj(path,_meshes);else ModelExporter.WriteStl(path,_meshes);
-            UpdateStatus("Exported "+Path.GetFileName(path));Toast.MakeText(this,"Saved: "+path,ToastLength.Long)?.Show();
+            UpdateStatus("Exported "+System.IO.Path.GetFileName(path));Toast.MakeText(this,"Saved: "+path,ToastLength.Long)?.Show();
         }
         catch(Exception ex){UpdateStatus("Export failed: "+ex.Message);}
     }
