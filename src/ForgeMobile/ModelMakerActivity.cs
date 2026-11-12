@@ -72,8 +72,8 @@ public sealed class ModelMakerActivity:Activity
         if(_meshes.Count==0){UpdateStatus("Add a mesh before exporting");return;}
         try
         {
-            var dir=Path.Combine(FilesDir!.AbsolutePath,"ClearGameEngine","Exports");Directory.CreateDirectory(dir);
-            var ext=obj?"obj":"stl";var path=Path.Combine(dir,"Model_"+DateTime.Now.ToString("yyyyMMdd_HHmmss")+"."+ext);
+            var dir=System.IO.Path.Combine(FilesDir!.AbsolutePath,"ClearGameEngine","Exports");Directory.CreateDirectory(dir);
+            var ext=obj?"obj":"stl";var path=System.IO.Path.Combine(dir,"Model_"+DateTime.Now.ToString("yyyyMMdd_HHmmss")+"."+ext);
             if(obj)ModelExporter.WriteObj(path,_meshes);else ModelExporter.WriteStl(path,_meshes);
             UpdateStatus("Exported "+Path.GetFileName(path));Toast.MakeText(this,"Saved: "+path,ToastLength.Long)?.Show();
         }
