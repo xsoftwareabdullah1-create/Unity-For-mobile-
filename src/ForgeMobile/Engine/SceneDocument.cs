@@ -44,6 +44,9 @@ public sealed class SceneObject
     public string Name { get; set; } = "GameObject";
     public string Type { get; set; } = "Empty";
     public bool Enabled { get; set; } = true;
+    public string Tag { get; set; } = "Untagged";
+    public string Layer { get; set; } = "Default";
+    public bool IsStatic { get; set; }
     public string ParentId { get; set; } = "";
     public TransformData Transform { get; set; } = new();
     public List<string> Components { get; set; } = new();
@@ -64,6 +67,9 @@ public sealed class SceneObject
         Name = Name + " Copy",
         Type = Type,
         Enabled = Enabled,
+        Tag = Tag,
+        Layer = Layer,
+        IsStatic = IsStatic,
         ParentId = ParentId,
         Transform = new TransformData
         {
