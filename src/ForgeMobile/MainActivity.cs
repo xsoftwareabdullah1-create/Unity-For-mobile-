@@ -56,72 +56,98 @@ public sealed class MainActivity : Activity
         root.SetBackgroundColor(_bg);
         SetContentView(root);
 
-        var header = new LinearLayout(this) { Orientation = Orientation.Horizontal };
-        header.SetGravity(GravityFlags.CenterVertical);
-        header.SetPadding(Dp(12), Dp(5), Dp(8), Dp(5));
-        header.SetBackgroundColor(Color.Rgb(12, 16, 23));
-        header.AddView(Label("FORGE", 19, _text, true), new LinearLayout.LayoutParams(Dp(75), Dp(42)));
-        header.AddView(Label("MOBILE / MyFirstGame", 11, _muted), new LinearLayout.LayoutParams(0, Dp(42), 1));
-        header.AddView(Button("＋ CUBE", () => AddObject("Cube", "Mesh")), Wrap());
-        header.AddView(Button("＋ EMPTY", () => AddObject("GameObject", "Empty")), Wrap());
-        _playButton = Label("▶ PLAY", 11, _text, true);
-        StyleButton(_playButton);
-        _playButton.Click += (_, _) => TogglePlay();
-        header.AddView(_playButton, Wrap());
-        header.AddView(Button("Ⅱ PAUSE", TogglePause), Wrap());
-        header.AddView(Button("▸ STEP", Step), Wrap());
-        header.AddView(Button("SAVE", Save), Wrap());
-        root.AddView(header, new LinearLayout.LayoutParams(-1, Dp(52)));
+        // Unity-inspired desktop editor chrome: menu, transport, tool strip and docked panels.
+        var menu = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+        menu.SetGravity(GravityFlags.CenterVertical);
+        menu.SetPadding(Dp(8), 0, Dp(6), 0);
+        menu.SetBackgroundColor(Color.Rgb(20, 23, 29));
+        menu.AddView(Label("FORGE", 15, Color.Rgb(105, 170, 255), true), new LinearLayout.LayoutParams(Dp(66), Dp(30)));
+        foreach (var item in new[] { "File", "Edit", "Assets", "GameObject", "Component", "Window", "Help" })
+            menu.AddView(Button(item, () => Log(item + " menu")), new LinearLayout.LayoutParams(-2, Dp(27)) { RightMargin = Dp(2) });
+        menu.AddView(Label("MyFirstGame  •  Android Editor", 9, _muted), new LinearLayout.LayoutParams(0, Dp(30), 1));
+        root.AddView(menu, new LinearLayout.LayoutParams(-1, Dp(31)));
 
-        var tools = new LinearLayout(this) { Orientation = Orientation.Horizontal };
-        tools.SetGravity(GravityFlags.CenterVertical);
-        tools.SetPadding(Dp(8), Dp(3), Dp(8), Dp(3));
-        tools.SetBackgroundColor(_panel);
-        tools.AddView(Label("TOOLS", 10, _muted, true), Wrap());
-        foreach (var tool in new[] { "SELECT", "MOVE", "ROTATE", "SCALE" })
-            tools.AddView(Button(tool, () => Log(tool + " tool selected")), Wrap());
-        tools.AddView(Button("DUPLICATE", DuplicateSelected), Wrap());
-        tools.AddView(Button("DELETE", DeleteSelected), Wrap());
-        root.AddView(tools, new LinearLayout.LayoutParams(-1, Dp(40)));
+        var transport = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+        transport.SetGravity(GravityFlags.CenterVertical);
+        transport.SetPadding(Dp(7), Dp(3), Dp(7), Dp(3));
+        transport.SetBackgroundColor(Color.Rgb(31, 35, 43));
+        _playButton = Button("▶", TogglePlay);
+        transport.AddView(_playButton, new LinearLayout.LayoutParams(Dp(38), Dp(30)));
+        transport.AddView(Button("Ⅱ", TogglePause), new LinearLayout.LayoutParams(Dp(38), Dp(30)));
+        transport.AddView(Button("▸", Step), new LinearLayout.LayoutParams(Dp(38), Dp(30)));
+        transport.AddView(new View(this), new LinearLayout.LayoutParams(Dp(1), Dp(22)) { LeftMargin = Dp(8), RightMargin = Dp(8) });
+        transport.AddView(Button("＋ CUBE", () => AddObject("Cube", "Mesh")), Wrap());
+        transport.AddView(Button("＋ EMPTY", () => AddObject("GameObject", "Empty")), Wrap());
+        transport.AddView(Button("SAVE", Save), Wrap());
+        transport.AddView(new View(this), new LinearLayout.LayoutParams(0, 1, 1));
+        transport.AddView(Label("LAYOUT: DEFAULT", 9, _muted), Wrap());
+        root.AddView(transport, new LinearLayout.LayoutParams(-1, Dp(39)));
+
+        var toolStrip = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+        toolStrip.SetGravity(GravityFlags.CenterVertical);
+        toolStrip.SetPadding(Dp(7), 0, Dp(7), 0);
+        toolStrip.SetBackgroundColor(Color.Rgb(26, 30, 38));
+        foreach (var tool in new[] { "✥", "MOVE", "ROTATE", "SCALE", "RECT", "HAND" })
+            toolStrip.AddView(Button(tool, () => Log(tool + " tool selected")), new LinearLayout.LayoutParams(-2, Dp(29)) { RightMargin = Dp(3) });
+        toolStrip.AddView(new View(this), new LinearLayout.LayoutParams(0, 1, 1));
+        toolStrip.AddView(Button("DUPLICATE", DuplicateSelected), Wrap());
+        toolStrip.AddView(Button("DELETE", DeleteSelected), Wrap());
+        root.AddView(toolStrip, new LinearLayout.LayoutParams(-1, Dp(35)));
 
         var workspace = new LinearLayout(this) { Orientation = Orientation.Horizontal };
         root.AddView(workspace, new LinearLayout.LayoutParams(-1, 0, 1));
 
         var hierarchyPanel = Panel("HIERARCHY");
+        hierarchyPanel.AddView(Button("＋  CREATE", () => AddObject("GameObject", "Empty")), new LinearLayout.LayoutParams(-1, Dp(30)));
         _hierarchyList = new LinearLayout(this) { Orientation = Orientation.Vertical };
         var hierarchyScroll = new ScrollView(this);
         hierarchyScroll.AddView(_hierarchyList);
         hierarchyPanel.AddView(hierarchyScroll, new LinearLayout.LayoutParams(-1, 0, 1));
-        workspace.AddView(hierarchyPanel, new LinearLayout.LayoutParams(Dp(160), -1));
+        workspace.AddView(hierarchyPanel, new LinearLayout.LayoutParams(Dp(142), -1));
 
         var center = new LinearLayout(this) { Orientation = Orientation.Vertical };
-        var tabs = new LinearLayout(this) { Orientation = Orientation.Horizontal };
-        tabs.SetBackgroundColor(Color.Rgb(21, 26, 35));
-        tabs.AddView(Label("SCENE", 11, _text, true), new LinearLayout.LayoutParams(Dp(75), Dp(32)));
-        tabs.AddView(Label("GAME", 11, _muted), new LinearLayout.LayoutParams(Dp(75), Dp(32)));
-        center.AddView(tabs, new LinearLayout.LayoutParams(-1, Dp(32)));
+        var viewTabs = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+        viewTabs.SetGravity(GravityFlags.CenterVertical);
+        viewTabs.SetPadding(Dp(7), 0, Dp(5), 0);
+        viewTabs.SetBackgroundColor(Color.Rgb(22, 26, 33));
+        viewTabs.AddView(Label("SCENE", 10, _text, true), new LinearLayout.LayoutParams(Dp(58), Dp(31)));
+        viewTabs.AddView(Button("GAME", () => Log("Game view selected — runtime viewport is coming next")), new LinearLayout.LayoutParams(Dp(55), Dp(29)));
+        viewTabs.AddView(Button("＋", () => Log("Create editor tab")), new LinearLayout.LayoutParams(Dp(32), Dp(29)));
+        viewTabs.AddView(new View(this), new LinearLayout.LayoutParams(0, 1, 1));
+        viewTabs.AddView(Label("Shaded  ▾   2D   Gizmos  ▾", 9, _muted), Wrap());
+        center.AddView(viewTabs, new LinearLayout.LayoutParams(-1, Dp(32)));
         _viewport = new SceneViewport(this);
         _viewport.OnViewportTap = () => Log("Scene viewport focused");
         center.AddView(_viewport, new LinearLayout.LayoutParams(-1, 0, 1));
+        var status = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+        status.SetPadding(Dp(7), 0, Dp(7), 0);
+        status.SetBackgroundColor(Color.Rgb(22, 26, 33));
+        status.AddView(Label("Perspective  |  Global", 9, _muted), new LinearLayout.LayoutParams(0, Dp(23), 1));
+        status.AddView(Label("X  Y  Z", 9, _muted), Wrap());
+        center.AddView(status, new LinearLayout.LayoutParams(-1, Dp(23)));
         workspace.AddView(center, new LinearLayout.LayoutParams(0, -1, 1));
 
         var inspectorPanel = Panel("INSPECTOR");
+        inspectorPanel.AddView(Label("  Tag: Untagged       Layer: Default", 9, _muted), new LinearLayout.LayoutParams(-1, Dp(27)));
         _inspector = new LinearLayout(this) { Orientation = Orientation.Vertical };
         var inspectorScroll = new ScrollView(this);
         inspectorScroll.AddView(_inspector);
         inspectorPanel.AddView(inspectorScroll, new LinearLayout.LayoutParams(-1, 0, 1));
-        workspace.AddView(inspectorPanel, new LinearLayout.LayoutParams(Dp(218), -1));
+        workspace.AddView(inspectorPanel, new LinearLayout.LayoutParams(Dp(205), -1));
 
         var dock = new LinearLayout(this) { Orientation = Orientation.Vertical };
-        dock.SetBackgroundColor(_panel);
+        dock.SetBackgroundColor(Color.Rgb(25, 29, 37));
         var dockTabs = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+        dockTabs.SetBackgroundColor(Color.Rgb(20, 24, 31));
         dockTabs.AddView(Button("PROJECT", () => ShowDock("PROJECT")), Wrap());
-        dockTabs.AddView(Button("C# SCRIPTS", () => ShowDock("SCRIPTS")), Wrap());
         dockTabs.AddView(Button("CONSOLE", () => ShowDock("CONSOLE")), Wrap());
-        dock.AddView(dockTabs, new LinearLayout.LayoutParams(-1, Dp(34)));
+        dockTabs.AddView(Button("C# SCRIPTS", () => ShowDock("SCRIPTS")), Wrap());
+        dockTabs.AddView(new View(this), new LinearLayout.LayoutParams(0, 1, 1));
+        dockTabs.AddView(Label("＋   ⋮", 12, _muted), new LinearLayout.LayoutParams(Dp(44), Dp(31)));
+        dock.AddView(dockTabs, new LinearLayout.LayoutParams(-1, Dp(32)));
         _dockContent = new LinearLayout(this) { Orientation = Orientation.Vertical };
-        dock.AddView(_dockContent, new LinearLayout.LayoutParams(-1, Dp(126)));
-        root.AddView(dock, new LinearLayout.LayoutParams(-1, Dp(160)));
+        dock.AddView(_dockContent, new LinearLayout.LayoutParams(-1, Dp(105)));
+        root.AddView(dock, new LinearLayout.LayoutParams(-1, Dp(137)));
 
         RefreshHierarchy();
         RefreshInspector();
