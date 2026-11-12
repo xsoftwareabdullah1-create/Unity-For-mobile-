@@ -70,6 +70,7 @@ public sealed class SceneObject
         Tag = Tag,
         Layer = Layer,
         IsStatic = IsStatic,
+        Metadata = new Dictionary<string, string>(Metadata),
         ParentId = ParentId,
         Transform = new TransformData
         {
