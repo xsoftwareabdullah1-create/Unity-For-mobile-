@@ -23,7 +23,7 @@ public sealed class SceneViewport : View
         var h = Height;
         if (w <= 0 || h <= 0) return;
         _paint.Color = Color.Rgb(24, 29, 38);
-        _paint.Style = Paint.Style.Fill;
+        _paint.SetStyle(Paint.Style.Fill);
         canvas.DrawRect(0, 0, w, h, _paint);
 
         _paint.Color = Color.Rgb(43, 52, 66);
@@ -40,12 +40,12 @@ public sealed class SceneViewport : View
 
         _paint.Color = Color.Rgb(75, 145, 235);
         _paint.StrokeWidth = 3;
-        _paint.Style = Paint.Style.Stroke;
+        _paint.SetStyle(Paint.Style.Stroke);
         DrawLoop(canvas, front);
         DrawLoop(canvas, back);
         for (var i = 0; i < 4; i++) canvas.DrawLine(front[i].X, front[i].Y, back[i].X, back[i].Y, _paint);
 
-        _paint.Style = Paint.Style.Fill;
+        _paint.SetStyle(Paint.Style.Fill);
         _paint.Color = Color.Rgb(90, 165, 255);
         canvas.DrawCircle(cx, cy + size + 22, 5, _paint);
         _paint.Color = Color.Rgb(225, 232, 242);
