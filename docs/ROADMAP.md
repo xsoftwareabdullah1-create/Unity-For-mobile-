@@ -20,7 +20,7 @@ Every milestone needs a testable artifact. Source code alone does not mean a fea
 - [ ] Create/open/rename projects and scenes.
 - [ ] Parent/child hierarchy and drag reorder.
 - [ ] Complete transform editor (position, rotation, scale).
-- [ ] Component add/remove and editable properties.
+- [x] Component add/remove and editable properties.\n- [x] Scrollable Inspector metadata and transform sections.\n- [x] Custom metadata key/value fields and theme models.
 - [ ] Autosave, undo/redo and recovery.
 
 ## Phase 3 — Rendering
@@ -34,7 +34,7 @@ Every milestone needs a testable artifact. Source code alone does not mean a fea
 **Exit gate:** touch-edit a scene and see actual GPU-rendered output.
 
 ## Phase 4 — Game runtime
-- [ ] Entity/component/transform runtime.
+- [x] Initial scene graph, entity/component/transform data model.\n- [ ] Runtime lifecycle and simulation integration.
 - [ ] Parent-child world transforms.
 - [ ] Awake, Start, Update, FixedUpdate and OnDestroy lifecycle.
 - [ ] Real Play/Pause/Step/Stop simulation.
