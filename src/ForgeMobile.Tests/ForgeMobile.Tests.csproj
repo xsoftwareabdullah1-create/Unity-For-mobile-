@@ -8,5 +8,6 @@
   <ItemGroup>
     <Compile Include="../ForgeMobile/GlobalUsings.cs" Link="GlobalUsings.cs" />
     <Compile Include="../ForgeMobile/Engine/**/*.cs" Link="Engine/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="../ForgeMobile/ModelMaker/**/*.cs" Link="ModelMaker/%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>
