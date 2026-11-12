@@ -63,7 +63,7 @@ public sealed class MainActivity : Activity
         menu.SetBackgroundColor(Color.Rgb(20, 23, 29));
         menu.AddView(Label("FORGE", 15, Color.Rgb(105, 170, 255), true), new LinearLayout.LayoutParams(Dp(66), Dp(30)));
         foreach (var item in new[] { "File", "Edit", "Assets", "GameObject", "Component", "Window", "Help" })
-            menu.AddView(Button(item, () => Log(item + " menu")), new LinearLayout.LayoutParams(-2, Dp(27)) { RightMargin = Dp(2) });
+            menu.AddView(Button(item, () => OpenMenu(item)), new LinearLayout.LayoutParams(-2, Dp(27)) { RightMargin = Dp(2) });
         menu.AddView(Label("MyFirstGame  •  Android Editor", 9, _muted), new LinearLayout.LayoutParams(0, Dp(30), 1));
         root.AddView(menu, new LinearLayout.LayoutParams(-1, Dp(31)));
 
@@ -103,7 +103,7 @@ public sealed class MainActivity : Activity
         var hierarchyScroll = new ScrollView(this);
         hierarchyScroll.AddView(_hierarchyList);
         hierarchyPanel.AddView(hierarchyScroll, new LinearLayout.LayoutParams(-1, 0, 1));
-        workspace.AddView(hierarchyPanel, new LinearLayout.LayoutParams(Dp(142), -1));
+        workspace.AddView(hierarchyPanel, new LinearLayout.LayoutParams(Dp(158), -1));
 
         var center = new LinearLayout(this) { Orientation = Orientation.Vertical };
         var viewTabs = new LinearLayout(this) { Orientation = Orientation.Horizontal };
@@ -133,7 +133,7 @@ public sealed class MainActivity : Activity
         var inspectorScroll = new ScrollView(this);
         inspectorScroll.AddView(_inspector);
         inspectorPanel.AddView(inspectorScroll, new LinearLayout.LayoutParams(-1, 0, 1));
-        workspace.AddView(inspectorPanel, new LinearLayout.LayoutParams(Dp(205), -1));
+        workspace.AddView(inspectorPanel, new LinearLayout.LayoutParams(Dp(232), -1));
 
         var dock = new LinearLayout(this) { Orientation = Orientation.Vertical };
         dock.SetBackgroundColor(Color.Rgb(25, 29, 37));
@@ -146,8 +146,8 @@ public sealed class MainActivity : Activity
         dockTabs.AddView(Label("＋   ⋮", 12, _muted), new LinearLayout.LayoutParams(Dp(44), Dp(31)));
         dock.AddView(dockTabs, new LinearLayout.LayoutParams(-1, Dp(32)));
         _dockContent = new LinearLayout(this) { Orientation = Orientation.Vertical };
-        dock.AddView(_dockContent, new LinearLayout.LayoutParams(-1, Dp(105)));
-        root.AddView(dock, new LinearLayout.LayoutParams(-1, Dp(137)));
+        dock.AddView(_dockContent, new LinearLayout.LayoutParams(-1, Dp(148)));
+        root.AddView(dock, new LinearLayout.LayoutParams(-1, Dp(180)));
 
         RefreshHierarchy();
         RefreshInspector();
@@ -175,7 +175,7 @@ public sealed class MainActivity : Activity
             row.SetPadding(Dp(7), 0, Dp(3), 0);
             row.SetBackgroundColor(item.Id == _selectedId ? Color.Rgb(43, 68, 103) : _panel);
             row.AddView(Label(item.Type switch { "Camera" => "◉", "Light" => "☼", "Mesh" => "◇", _ => "□" }, 14, Color.Rgb(90, 165, 255)), new LinearLayout.LayoutParams(Dp(23), Dp(34)));
-            row.AddView(Label(item.Name, 11, _text), new LinearLayout.LayoutParams(0, Dp(34), 1));
+            row.AddView(Label(item.Name + (item.Enabled ? "" : "  (Disabled)"), 11, _text), new LinearLayout.LayoutParams(0, Dp(34), 1));
             row.Click += (_, _) => { _selectedId = item.Id; RefreshHierarchy(); RefreshInspector(); };
             _hierarchyList.AddView(row, new LinearLayout.LayoutParams(-1, Dp(34)));
         }
@@ -186,38 +186,68 @@ public sealed class MainActivity : Activity
         _inspector.RemoveAllViews();
         var item = _scene.Find(_selectedId);
         if (item is null) { _inspector.AddView(Label("Select an object", 12, _muted)); return; }
-        InspectorHeading("OBJECT");
+
+        InspectorHeading("GAMEOBJECT");
         var name = new EditText(this) { Text = item.Name, TextSize = 12 };
         name.SetSingleLine(true);
         name.SetTextColor(_text);
         name.SetPadding(Dp(7), 0, Dp(7), 0);
         name.SetBackgroundColor(_panel2);
-        _inspector.AddView(name, new LinearLayout.LayoutParams(-1, Dp(39)));
-        InspectorHeading("TRANSFORM / POSITION");
-        var x = NumberField(item.Transform.X);
-        var y = NumberField(item.Transform.Y);
-        var z = NumberField(item.Transform.Z);
-        AxisRow("X", x); AxisRow("Y", y); AxisRow("Z", z);
-        _inspector.AddView(Button("APPLY CHANGES", () =>
+        _inspector.AddView(name, new LinearLayout.LayoutParams(-1, Dp(38)));
+
+        InspectorHeading("METADATA");
+        var tag = new EditText(this) { Text = item.Tag, Hint = "Tag", TextSize = 11 };
+        tag.SetSingleLine(true); tag.SetTextColor(_text); tag.SetHintTextColor(_muted); tag.SetBackgroundColor(_panel2);
+        _inspector.AddView(tag, new LinearLayout.LayoutParams(-1, Dp(36)));
+        var layer = new EditText(this) { Text = item.Layer, Hint = "Layer", TextSize = 11 };
+        layer.SetSingleLine(true); layer.SetTextColor(_text); layer.SetHintTextColor(_muted); layer.SetBackgroundColor(_panel2);
+        _inspector.AddView(layer, new LinearLayout.LayoutParams(-1, Dp(36)));
+        var enabled = new CheckBox(this) { Text = "Active", Checked = item.Enabled, TextSize = 11 };
+        enabled.SetTextColor(_text); _inspector.AddView(enabled, new LinearLayout.LayoutParams(-1, Dp(34)));
+        var isStatic = new CheckBox(this) { Text = "Static", Checked = item.IsStatic, TextSize = 11 };
+        isStatic.SetTextColor(_text); _inspector.AddView(isStatic, new LinearLayout.LayoutParams(-1, Dp(34)));
+        _inspector.AddView(Label("Type: " + item.Type + "    ID: " + item.Id[..Math.Min(8, item.Id.Length)], 9, _muted),
+            new LinearLayout.LayoutParams(-1, Dp(25)));
+
+        InspectorHeading("TRANSFORM");
+        var pX = NumberField(item.Transform.X); var pY = NumberField(item.Transform.Y); var pZ = NumberField(item.Transform.Z);
+        AxisRow("Position X", pX); AxisRow("Position Y", pY); AxisRow("Position Z", pZ);
+        var rX = NumberField(item.Transform.RotationX); var rY = NumberField(item.Transform.RotationY); var rZ = NumberField(item.Transform.RotationZ);
+        AxisRow("Rotation X", rX); AxisRow("Rotation Y", rY); AxisRow("Rotation Z", rZ);
+        var sX = NumberField(item.Transform.ScaleX); var sY = NumberField(item.Transform.ScaleY); var sZ = NumberField(item.Transform.ScaleZ);
+        AxisRow("Scale X", sX); AxisRow("Scale Y", sY); AxisRow("Scale Z", sZ);
+
+        _inspector.AddView(Button("APPLY ALL PROPERTIES", () =>
         {
             item.Name = string.IsNullOrWhiteSpace(name.Text) ? "GameObject" : name.Text.Trim();
-            item.Transform.X = Parse(x.Text, item.Transform.X);
-            item.Transform.Y = Parse(y.Text, item.Transform.Y);
-            item.Transform.Z = Parse(z.Text, item.Transform.Z);
-            _viewport.SelectedName = item.Name;
-            _viewport.Invalidate();
-            RefreshHierarchy();
-            Log("Inspector updated: " + item.Name);
-        }), new LinearLayout.LayoutParams(-1, Dp(39)));
-        InspectorHeading("COMPONENTS");
-        foreach (var component in item.Components)
-            _inspector.AddView(Label("  ◈  " + component, 11, _muted), new LinearLayout.LayoutParams(-1, Dp(27)));
-        _inspector.AddView(Button("+ ADD COMPONENT", () =>
+            item.Tag = string.IsNullOrWhiteSpace(tag.Text) ? "Untagged" : tag.Text.Trim();
+            item.Layer = string.IsNullOrWhiteSpace(layer.Text) ? "Default" : layer.Text.Trim();
+            item.Enabled = enabled.Checked; item.IsStatic = isStatic.Checked;
+            item.Transform.X = Parse(pX.Text, item.Transform.X); item.Transform.Y = Parse(pY.Text, item.Transform.Y); item.Transform.Z = Parse(pZ.Text, item.Transform.Z);
+            item.Transform.RotationX = Parse(rX.Text, item.Transform.RotationX); item.Transform.RotationY = Parse(rY.Text, item.Transform.RotationY); item.Transform.RotationZ = Parse(rZ.Text, item.Transform.RotationZ);
+            item.Transform.ScaleX = Parse(sX.Text, item.Transform.ScaleX); item.Transform.ScaleY = Parse(sY.Text, item.Transform.ScaleY); item.Transform.ScaleZ = Parse(sZ.Text, item.Transform.ScaleZ);
+            _viewport.SelectedName = item.Name; _viewport.Invalidate();
+            RefreshHierarchy(); Log("Applied metadata and transform to " + item.Name);
+        }), new LinearLayout.LayoutParams(-1, Dp(40)));
+
+        InspectorHeading("COMPONENTS (" + item.Components.Count + ")");
+        foreach (var component in item.Components.ToArray())
         {
-            if (!item.Components.Contains("Behaviour")) item.Components.Add("Behaviour");
-            RefreshInspector();
-            Log("Added Behaviour component");
-        }), new LinearLayout.LayoutParams(-1, Dp(37)));
+            var card = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+            card.SetGravity(GravityFlags.CenterVertical); card.SetPadding(Dp(7), 0, Dp(4), 0);
+            card.SetBackgroundColor(_panel2);
+            card.AddView(Label("◈  " + component, 11, _text), new LinearLayout.LayoutParams(0, Dp(38), 1));
+            if (component != "Transform")
+                card.AddView(Button("REMOVE", () => { item.Components.Remove(component); RefreshInspector(); Log("Removed " + component); }), Wrap());
+            _inspector.AddView(card, new LinearLayout.LayoutParams(-1, Dp(40)));
+        }
+        _inspector.AddView(Button("+ ADD COMPONENT", () => ShowAddComponent(item)), new LinearLayout.LayoutParams(-1, Dp(40)));
+        InspectorHeading("RENDERER SETTINGS");
+        _inspector.AddView(Label("Material: Default-Material", 10, _muted), new LinearLayout.LayoutParams(-1, Dp(30)));
+        _inspector.AddView(Label("Cast Shadows: On    Receive Shadows: On", 9, _muted), new LinearLayout.LayoutParams(-1, Dp(28)));
+        InspectorHeading("OBJECT INFORMATION");
+        _inspector.AddView(Label("Parent: " + (string.IsNullOrEmpty(item.ParentId) ? "Scene Root" : item.ParentId), 9, _muted), new LinearLayout.LayoutParams(-1, Dp(26)));
+        _inspector.AddView(Label("Scene: " + _scene.Name, 9, _muted), new LinearLayout.LayoutParams(-1, Dp(26)));
     }
 
     private void InspectorHeading(string value)
@@ -241,7 +271,7 @@ public sealed class MainActivity : Activity
     {
         var row = new LinearLayout(this) { Orientation = Orientation.Horizontal };
         row.SetGravity(GravityFlags.CenterVertical);
-        row.AddView(Label(axis, 11, _muted, true), new LinearLayout.LayoutParams(Dp(22), Dp(34)));
+        row.AddView(Label(axis, 9, _muted, true), new LinearLayout.LayoutParams(Dp(72), Dp(34)));
         row.AddView(field, new LinearLayout.LayoutParams(0, Dp(34), 1));
         _inspector.AddView(row, new LinearLayout.LayoutParams(-1, Dp(37)));
     }
@@ -421,4 +451,61 @@ public sealed class MainActivity : Activity
         if (_mode != "EDIT") TogglePlay();
         else { Save(); base.OnBackPressed(); }
     }
-}
+}    private void OpenMenu(string menu)
+    {
+        string[] options = menu switch
+        {
+            "File" => new[] { "Save Scene", "New Scene", "Project Settings", "Build Settings" },
+            "Edit" => new[] { "Duplicate", "Delete", "Undo (planned)", "Redo (planned)" },
+            "Assets" => new[] { "Create Folder", "Import Asset", "Refresh Assets" },
+            "GameObject" => new[] { "Create Empty", "3D Object / Cube", "3D Object / Sphere", "3D Object / Capsule", "3D Object / Plane", "Camera", "Directional Light" },
+            "Component" => new[] { "Add Component", "Transform", "Mesh Renderer", "Rigidbody", "Box Collider", "Audio Source", "Camera" },
+            "Window" => new[] { "Project", "Console", "C# Scripts", "Hierarchy", "Inspector" },
+            _ => new[] { "Forge Mobile Editor", "About", "Roadmap" }
+        };
+        new AlertDialog.Builder(this).SetTitle(menu).SetItems(options, (_, args) =>
+        {
+            var choice = options[args.Which];
+            switch (choice)
+            {
+                case "Save Scene": Save(); break;
+                case "New Scene":
+                    _scene = SceneDocument.CreateDefault(); _selectedId = _scene.Objects.Last().Id;
+                    RefreshHierarchy(); RefreshInspector(); _viewport.Invalidate(); Log("Created a new scene"); break;
+                case "Duplicate": DuplicateSelected(); break;
+                case "Delete": DeleteSelected(); break;
+                case "Create Empty": AddObject("GameObject", "Empty"); break;
+                case "3D Object / Cube": AddObject("Cube", "Mesh"); break;
+                case "3D Object / Sphere": AddObject("Sphere", "Mesh"); break;
+                case "3D Object / Capsule": AddObject("Capsule", "Mesh"); break;
+                case "3D Object / Plane": AddObject("Plane", "Mesh"); break;
+                case "Camera": AddObject("Camera", "Camera"); break;
+                case "Directional Light": AddObject("Directional Light", "Light"); break;
+                case "Add Component": ShowAddComponent(_scene.Find(_selectedId)); break;
+                case "Project": ShowDock("PROJECT"); break;
+                case "Console": ShowDock("CONSOLE"); break;
+                case "C# Scripts": ShowDock("SCRIPTS"); break;
+                case "Create Folder": Log("Project folder browser is planned"); break;
+                case "Import Asset": Log("Asset import pipeline is planned"); break;
+                case "Refresh Assets": ShowDock("PROJECT"); Log("Asset list refreshed"); break;
+                case "Project Settings": Log("Project settings panel is planned"); break;
+                case "Build Settings": Log("Android build settings are planned"); break;
+                case "About": Log("Forge Mobile — independent Unity-inspired editor"); break;
+                default: Log(choice + " is not implemented yet"); break;
+            }
+        }).Show();
+    }
+
+    private void ShowAddComponent(SceneObject? item)
+    {
+        if (item is null) { Log("Select an object first"); return; }
+        var choices = new[] { "Mesh Renderer", "Rigidbody", "Box Collider", "Sphere Collider", "Capsule Collider", "Audio Source", "Camera", "Light", "Behaviour", "Animator" };
+        new AlertDialog.Builder(this).SetTitle("Add Component").SetItems(choices, (_, args) =>
+        {
+            var selected = choices[args.Which];
+            if (!item.Components.Contains(selected)) item.Components.Add(selected);
+            RefreshInspector(); Log("Added component: " + selected);
+        }).Show();
+    }
+
+
