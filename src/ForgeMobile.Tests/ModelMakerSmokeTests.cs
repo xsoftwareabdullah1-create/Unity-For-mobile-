@@ -22,7 +22,7 @@ public static class ModelMakerSmokeTests
         File.Delete(stl);
 
         var models=new List<ModelMesh>();
-        new ModelScriptInterpreter().Execute("cube Body\nscale Body 1 2 1\nsphere Head\nmove Head 0 1.5 0",models);
+        new ModelScriptInterpreter().Execute(string.Join((char)10, new[] { "cube Body", "scale Body 1 2 1", "sphere Head", "move Head 0 1.5 0" }),models);
         if(models.Count!=2 || Math.Abs(models[0].Scale.Y-2)>0.001f || Math.Abs(models[1].Position.Y-1.5f)>0.001f)
             throw new Exception("Code-to-3D interpreter failed");
         var guide=new LocalModelingAssistant().Ask("How do I make a robot character?");
