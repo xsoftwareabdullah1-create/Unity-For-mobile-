@@ -25,11 +25,11 @@ public sealed class SceneViewport : View
 
         // Skybox-like scene background and a perspective ground plane.
         _paint.SetStyle(Paint.Style.Fill);
-        _paint.Shader = new LinearGradient(0, 0, 0, h * .68f,
-            new[] { Color.Rgb(91, 139, 174), Color.Rgb(173, 193, 202), Color.Rgb(91, 99, 101) },
-            new[] { 0f, .72f, 1f }, Shader.TileMode.Clamp);
+        using var skyGradient = new LinearGradient(0, 0, 0, h * .68f,
+            Color.Rgb(91, 139, 174), Color.Rgb(91, 99, 101), Shader.TileMode.Clamp);
+        _paint.SetShader(skyGradient);
         canvas.DrawRect(0, 0, w, h, _paint);
-        _paint.Shader = null;
+        _paint.SetShader(null);
         var horizon = h * .61f;
         _paint.Color = Color.Rgb(89, 91, 86);
         canvas.DrawRect(0, horizon, w, h, _paint);
@@ -72,7 +72,7 @@ public sealed class SceneViewport : View
         var q1 = new PointF(p1.X + dx, p1.Y - dy);
         var q2 = new PointF(p2.X + dx, p2.Y - dy);
 
-        var leftFace = new Path();
+        var leftFace = new Android.Graphics.Path();
         leftFace.MoveTo(p0.X, p0.Y); leftFace.LineTo(p3.X, p3.Y);
         leftFace.LineTo(p2.X, p2.Y); leftFace.LineTo(q2.X, q2.Y);
         leftFace.LineTo(q0.X, q0.Y); leftFace.Close();
