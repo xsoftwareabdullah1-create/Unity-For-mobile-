@@ -38,6 +38,9 @@ public sealed class ModelMakerActivity:Activity
         toolRow.AddView(Button("SCALE +",()=>Scale(1.1f)),Wrap());
         toolRow.AddView(Button("SCALE -",()=>Scale(.9f)),Wrap());
         toolRow.AddView(Button("DELETE",Delete),Wrap());
+        toolRow.AddView(Button("CODE → 3D",OpenCodeEditor),Wrap());
+        toolRow.AddView(Button("LOCAL AI",OpenAssistant),Wrap());
+        toolRow.AddView(Button("IMPORT OBJ",ImportObj),Wrap());
         tools.AddView(toolRow);root.AddView(tools,new LinearLayout.LayoutParams(-1,Dp(44)));
         var workspace=new LinearLayout(this){Orientation=Orientation.Horizontal};
         root.AddView(workspace,new LinearLayout.LayoutParams(-1,0,1));
@@ -67,6 +70,57 @@ public sealed class ModelMakerActivity:Activity
         for(var i=0;i<_meshes.Count;i++){var index=i;var b=Button((_selected==i?"◆  ":"◇  ")+_meshes[i].Name,()=>{_selected=index;Refresh();});_list.AddView(b,new LinearLayout.LayoutParams(-1,Dp(38)){BottomMargin=Dp(3)});}
         _preview?.Invalidate();UpdateStatus(_meshes.Count+" mesh object(s) • drag to orbit");
     }
+
+    private void OpenCodeEditor()
+    {
+        var input=new EditText(this){Text=ModelScriptInterpreter.StarterScript,TextSize=12,Gravity=GravityFlags.Top|GravityFlags.Start};
+        input.SetSingleLine(false);input.SetMinHeight(Dp(220));
+        new AlertDialog.Builder(this).SetTitle("Code to 3D • Modeling DSL")
+            .SetMessage("Commands: cube NAME, sphere NAME, plane NAME, move/scale/rotate NAME X Y Z, delete NAME.")
+            .SetView(input).SetNegativeButton("CANCEL",(s,e)=>{})
+            .SetPositiveButton("RUN",(s,e)=>
+            {
+                try { new ModelScriptInterpreter().Execute(input.Text??"",_meshes); _selected=_meshes.Count-1; Refresh(); UpdateStatus("Model script executed"); }
+                catch(Exception ex) { UpdateStatus("Script error: "+ex.Message); new AlertDialog.Builder(this).SetTitle("Script error").SetMessage(ex.Message).SetPositiveButton("OK",null).Show(); }
+            }).Show();
+    }
+
+    private void OpenAssistant()
+    {
+        var input=new EditText(this){Hint="Ask about topology, UVs, robots, mobile optimization..."};
+        new AlertDialog.Builder(this).SetTitle("Clear Modeling Guide • Offline")
+            .SetMessage("Curated 3D modeling knowledge. No internet or API key required.")
+            .SetView(input).SetNegativeButton("CLOSE",null)
+            .SetPositiveButton("ASK",(s,e)=>
+            {
+                var reply=new LocalModelingAssistant().Ask(input.Text??"");
+                var message=reply.Text+(reply.Script is null?"":"\n\nSuggested modeling code:\n"+reply.Script);
+                new AlertDialog.Builder(this).SetTitle("Modeling Guide • "+reply.Topic).SetMessage(message).SetPositiveButton("OK",null).Show();
+            }).Show();
+    }
+
+    private void ImportObj()
+    {
+        var intent=new Android.Content.Intent(Android.Content.Intent.ActionOpenDocument);
+        intent.AddCategory(Android.Content.Intent.CategoryOpenable); intent.SetType("*/*");
+        StartActivityForResult(intent,701);
+    }
+
+    protected override void OnActivityResult(int requestCode,Android.App.Result resultCode,Android.Content.Intent? data)
+    {
+        base.OnActivityResult(requestCode,resultCode,data);
+        if(requestCode!=701||resultCode!=Android.App.Result.Ok||data?.Data is null)return;
+        try
+        {
+            using var input=ContentResolver!.OpenInputStream(data.Data);
+            if(input is null)throw new IOException("Unable to open selected file.");
+            var temp=System.IO.Path.Combine(CacheDir!.AbsolutePath,"import_"+Guid.NewGuid().ToString("N")+".obj");
+            using(var output=File.Create(temp))input.CopyTo(output);
+            Add(ObjImporter.Read(temp)); UpdateStatus("OBJ model imported");
+        }
+        catch(Exception ex) { UpdateStatus("Import failed: "+ex.Message); Toast.MakeText(this,"OBJ import failed: "+ex.Message,ToastLength.Long)?.Show(); }
+    }
+
     private void Export(bool obj)
     {
         if(_meshes.Count==0){UpdateStatus("Add a mesh before exporting");return;}
