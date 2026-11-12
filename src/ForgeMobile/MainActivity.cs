@@ -154,6 +154,63 @@ public sealed class MainActivity : Activity
         ShowDock("PROJECT");
     }
 
+   private void OpenMenu(string menu)
+    {
+        string[] options = menu switch
+        {
+            "File" => new[] { "Save Scene", "New Scene", "Project Settings", "Build Settings" },
+            "Edit" => new[] { "Duplicate", "Delete", "Undo (planned)", "Redo (planned)" },
+            "Assets" => new[] { "Create Folder", "Import Asset", "Refresh Assets" },
+            "GameObject" => new[] { "Create Empty", "3D Object / Cube", "3D Object / Sphere", "3D Object / Capsule", "3D Object / Plane", "Camera", "Directional Light" },
+            "Component" => new[] { "Add Component", "Transform", "Mesh Renderer", "Rigidbody", "Box Collider", "Audio Source", "Camera" },
+            "Window" => new[] { "Project", "Console", "C# Scripts", "Hierarchy", "Inspector" },
+            _ => new[] { "Forge Mobile Editor", "About", "Roadmap" }
+        };
+        new AlertDialog.Builder(this).SetTitle(menu).SetItems(options, (_, args) =>
+        {
+            var choice = options[args.Which];
+            switch (choice)
+            {
+                case "Save Scene": Save(); break;
+                case "New Scene":
+                    _scene = SceneDocument.CreateDefault(); _selectedId = _scene.Objects.Last().Id;
+                    RefreshHierarchy(); RefreshInspector(); _viewport.Invalidate(); Log("Created a new scene"); break;
+                case "Duplicate": DuplicateSelected(); break;
+                case "Delete": DeleteSelected(); break;
+                case "Create Empty": AddObject("GameObject", "Empty"); break;
+                case "3D Object / Cube": AddObject("Cube", "Mesh"); break;
+                case "3D Object / Sphere": AddObject("Sphere", "Mesh"); break;
+                case "3D Object / Capsule": AddObject("Capsule", "Mesh"); break;
+                case "3D Object / Plane": AddObject("Plane", "Mesh"); break;
+                case "Camera": AddObject("Camera", "Camera"); break;
+                case "Directional Light": AddObject("Directional Light", "Light"); break;
+                case "Add Component": ShowAddComponent(_scene.Find(_selectedId)); break;
+                case "Project": ShowDock("PROJECT"); break;
+                case "Console": ShowDock("CONSOLE"); break;
+                case "C# Scripts": ShowDock("SCRIPTS"); break;
+                case "Create Folder": Log("Project folder browser is planned"); break;
+                case "Import Asset": Log("Asset import pipeline is planned"); break;
+                case "Refresh Assets": ShowDock("PROJECT"); Log("Asset list refreshed"); break;
+                case "Project Settings": Log("Project settings panel is planned"); break;
+                case "Build Settings": Log("Android build settings are planned"); break;
+                case "About": Log("Forge Mobile — independent Unity-inspired editor"); break;
+                default: Log(choice + " is not implemented yet"); break;
+            }
+        }).Show();
+    }
+
+    private void ShowAddComponent(SceneObject? item)
+    {
+        if (item is null) { Log("Select an object first"); return; }
+        var choices = new[] { "Mesh Renderer", "Rigidbody", "Box Collider", "Sphere Collider", "Capsule Collider", "Audio Source", "Camera", "Light", "Behaviour", "Animator" };
+        new AlertDialog.Builder(this).SetTitle("Add Component").SetItems(choices, (_, args) =>
+        {
+            var selected = choices[args.Which];
+            if (!item.Components.Contains(selected)) item.Components.Add(selected);
+            RefreshInspector(); Log("Added component: " + selected);
+        }).Show();
+    }
+
     private LinearLayout Panel(string title)
     {
         var panel = new LinearLayout(this) { Orientation = Orientation.Vertical };
@@ -451,61 +508,5 @@ public sealed class MainActivity : Activity
         if (_mode != "EDIT") TogglePlay();
         else { Save(); base.OnBackPressed(); }
     }
-}    private void OpenMenu(string menu)
-    {
-        string[] options = menu switch
-        {
-            "File" => new[] { "Save Scene", "New Scene", "Project Settings", "Build Settings" },
-            "Edit" => new[] { "Duplicate", "Delete", "Undo (planned)", "Redo (planned)" },
-            "Assets" => new[] { "Create Folder", "Import Asset", "Refresh Assets" },
-            "GameObject" => new[] { "Create Empty", "3D Object / Cube", "3D Object / Sphere", "3D Object / Capsule", "3D Object / Plane", "Camera", "Directional Light" },
-            "Component" => new[] { "Add Component", "Transform", "Mesh Renderer", "Rigidbody", "Box Collider", "Audio Source", "Camera" },
-            "Window" => new[] { "Project", "Console", "C# Scripts", "Hierarchy", "Inspector" },
-            _ => new[] { "Forge Mobile Editor", "About", "Roadmap" }
-        };
-        new AlertDialog.Builder(this).SetTitle(menu).SetItems(options, (_, args) =>
-        {
-            var choice = options[args.Which];
-            switch (choice)
-            {
-                case "Save Scene": Save(); break;
-                case "New Scene":
-                    _scene = SceneDocument.CreateDefault(); _selectedId = _scene.Objects.Last().Id;
-                    RefreshHierarchy(); RefreshInspector(); _viewport.Invalidate(); Log("Created a new scene"); break;
-                case "Duplicate": DuplicateSelected(); break;
-                case "Delete": DeleteSelected(); break;
-                case "Create Empty": AddObject("GameObject", "Empty"); break;
-                case "3D Object / Cube": AddObject("Cube", "Mesh"); break;
-                case "3D Object / Sphere": AddObject("Sphere", "Mesh"); break;
-                case "3D Object / Capsule": AddObject("Capsule", "Mesh"); break;
-                case "3D Object / Plane": AddObject("Plane", "Mesh"); break;
-                case "Camera": AddObject("Camera", "Camera"); break;
-                case "Directional Light": AddObject("Directional Light", "Light"); break;
-                case "Add Component": ShowAddComponent(_scene.Find(_selectedId)); break;
-                case "Project": ShowDock("PROJECT"); break;
-                case "Console": ShowDock("CONSOLE"); break;
-                case "C# Scripts": ShowDock("SCRIPTS"); break;
-                case "Create Folder": Log("Project folder browser is planned"); break;
-                case "Import Asset": Log("Asset import pipeline is planned"); break;
-                case "Refresh Assets": ShowDock("PROJECT"); Log("Asset list refreshed"); break;
-                case "Project Settings": Log("Project settings panel is planned"); break;
-                case "Build Settings": Log("Android build settings are planned"); break;
-                case "About": Log("Forge Mobile — independent Unity-inspired editor"); break;
-                default: Log(choice + " is not implemented yet"); break;
-            }
-        }).Show();
-    }
-
-    private void ShowAddComponent(SceneObject? item)
-    {
-        if (item is null) { Log("Select an object first"); return; }
-        var choices = new[] { "Mesh Renderer", "Rigidbody", "Box Collider", "Sphere Collider", "Capsule Collider", "Audio Source", "Camera", "Light", "Behaviour", "Animator" };
-        new AlertDialog.Builder(this).SetTitle("Add Component").SetItems(choices, (_, args) =>
-        {
-            var selected = choices[args.Which];
-            if (!item.Components.Contains(selected)) item.Components.Add(selected);
-            RefreshInspector(); Log("Added component: " + selected);
-        }).Show();
-    }
-
-
+}
+}
