@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-      - name: Install .NET 9
+      - name: Install .NET 10
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
@@ -40,7 +40,6 @@ jobs:
           --configuration Release
           --framework net10.0-android
           -p:AndroidPackageFormat=apk
-          -p:AndroidSupportedAbis=arm64-v8a
           --output artifacts/apk
       - name: Locate APK
         shell: bash
