@@ -20,5 +20,14 @@ public static class ModelMakerSmokeTests
         ModelExporter.WriteStl(stl,new[]{plane});
         if(!File.ReadAllText(stl).Contains("endsolid ClearGameEngine")) throw new Exception("STL export invalid");
         File.Delete(stl);
+
+        var models=new List<ModelMesh>();
+        new ModelScriptInterpreter().Execute("cube Body\nscale Body 1 2 1\nsphere Head\nmove Head 0 1.5 0",models);
+        if(models.Count!=2 || Math.Abs(models[0].Scale.Y-2)>0.001f || Math.Abs(models[1].Position.Y-1.5f)>0.001f)
+            throw new Exception("Code-to-3D interpreter failed");
+        var guide=new LocalModelingAssistant().Ask("How do I make a robot character?");
+        if(string.IsNullOrWhiteSpace(guide.Text) || guide.Script is null) throw new Exception("Offline modeling guide failed");
+        if(!ModelFormatSupport.Formats.Any(x=>x.Extension==".obj" && x.Status==ModelFormatStatus.Implemented))
+            throw new Exception("Model format registry failed");
     }
 }
