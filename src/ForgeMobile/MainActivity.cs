@@ -56,7 +56,8 @@ public sealed class MainActivity : Activity
         root.SetBackgroundColor(_bg);
         SetContentView(root);
 
-        var header = new LinearLayout(this) { Orientation = Orientation.Horizontal };\n        header.SetGravity(GravityFlags.CenterVertical);
+        var header = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+        header.SetGravity(GravityFlags.CenterVertical);
         header.SetPadding(Dp(12), Dp(5), Dp(8), Dp(5));
         header.SetBackgroundColor(Color.Rgb(12, 16, 23));
         header.AddView(Label("FORGE", 19, _text, true), new LinearLayout.LayoutParams(Dp(75), Dp(42)));
@@ -72,7 +73,8 @@ public sealed class MainActivity : Activity
         header.AddView(Button("SAVE", Save), Wrap());
         root.AddView(header, new LinearLayout.LayoutParams(-1, Dp(52)));
 
-        var tools = new LinearLayout(this) { Orientation = Orientation.Horizontal };\n        tools.SetGravity(GravityFlags.CenterVertical);
+        var tools = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+        tools.SetGravity(GravityFlags.CenterVertical);
         tools.SetPadding(Dp(8), Dp(3), Dp(8), Dp(3));
         tools.SetBackgroundColor(_panel);
         tools.AddView(Label("TOOLS", 10, _muted, true), Wrap());
@@ -142,7 +144,8 @@ public sealed class MainActivity : Activity
         _hierarchyList.RemoveAllViews();
         foreach (var item in _scene.Objects)
         {
-            var row = new LinearLayout(this) { Orientation = Orientation.Horizontal };\n            row.SetGravity(GravityFlags.CenterVertical);
+            var row = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+            row.SetGravity(GravityFlags.CenterVertical);
             row.SetPadding(Dp(7), 0, Dp(3), 0);
             row.SetBackgroundColor(item.Id == _selectedId ? Color.Rgb(43, 68, 103) : _panel);
             row.AddView(Label(item.Type switch { "Camera" => "◉", "Light" => "☼", "Mesh" => "◇", _ => "□" }, 14, Color.Rgb(90, 165, 255)), new LinearLayout.LayoutParams(Dp(23), Dp(34)));
@@ -158,7 +161,8 @@ public sealed class MainActivity : Activity
         var item = _scene.Find(_selectedId);
         if (item is null) { _inspector.AddView(Label("Select an object", 12, _muted)); return; }
         InspectorHeading("OBJECT");
-        var name = new EditText(this) { Text = item.Name, TextSize = 12 };\n        name.SetSingleLine(true);
+        var name = new EditText(this) { Text = item.Name, TextSize = 12 };
+        name.SetSingleLine(true);
         name.SetTextColor(_text);
         name.SetPadding(Dp(7), 0, Dp(7), 0);
         name.SetBackgroundColor(_panel2);
@@ -200,7 +204,8 @@ public sealed class MainActivity : Activity
     private EditText NumberField(float value)
     {
         var field = new EditText(this) { Text = value.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture), InputType = Android.Text.InputTypes.ClassNumber | Android.Text.InputTypes.NumberFlagDecimal | Android.Text.InputTypes.NumberFlagSigned, TextSize = 11 };
-        field.SetSingleLine(true);\n        field.SetTextColor(_text);
+        field.SetSingleLine(true);
+        field.SetTextColor(_text);
         field.SetBackgroundColor(_panel2);
         field.SetPadding(Dp(5), 0, Dp(3), 0);
         return field;
@@ -208,7 +213,7 @@ public sealed class MainActivity : Activity
 
     private void AxisRow(string axis, EditText field)
     {
-        var row = new LinearLayout(this) { Orientation = Orientation.Horizontal, Gravity = GravityFlags.CenterVertical };
+        var row = new LinearLayout(this) { Orientation = Orientation.Horizontal };\n        row.SetGravity(GravityFlags.CenterVertical);
         row.AddView(Label(axis, 11, _muted, true), new LinearLayout.LayoutParams(Dp(22), Dp(34)));
         row.AddView(field, new LinearLayout.LayoutParams(0, Dp(34), 1));
         _inspector.AddView(row, new LinearLayout.LayoutParams(-1, Dp(37)));
@@ -229,7 +234,8 @@ public sealed class MainActivity : Activity
         else if (tab == "SCRIPTS")
         {
             var top = new LinearLayout(this) { Orientation = Orientation.Horizontal };
-            _scriptName = new EditText(this) { Text = "SpinBehaviour", TextSize = 11 };\n            _scriptName.SetSingleLine(true);
+            _scriptName = new EditText(this) { Text = "SpinBehaviour", TextSize = 11 };
+            _scriptName.SetSingleLine(true);
             _scriptName.SetTextColor(_text);
             top.AddView(_scriptName, new LinearLayout.LayoutParams(Dp(155), Dp(36)));
             top.AddView(Button("SAVE .CS", SaveScript), Wrap());
@@ -333,7 +339,7 @@ public sealed class MainActivity : Activity
         if (_activeDock == "CONSOLE") ShowDock("CONSOLE");
     }
 
-    private TextView Label(string value, float size, int color, bool bold = false)
+    private TextView Label(string value, float size, Color color, bool bold = false)
     {
         var view = new TextView(this) { Text = value, TextSize = size, Gravity = GravityFlags.CenterVertical };
         view.SetTextColor(color);
