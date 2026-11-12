@@ -1,77 +1,73 @@
 # Roadmap
 
-Each phase must produce a testable artifact. A phase is not complete merely because source code has been generated.
+Every milestone needs a testable artifact. Source code alone does not mean a feature is complete.
 
-## Phase 1 — Foundation
-- [x] Record product goals and platform constraints.
-- [x] Define editor/runtime/platform boundaries.
-- [x] Define C# and C++ support strategy.
-- [ ] Select and pin Android-compatible dependency versions.
-- [ ] Add the first compilable Android host project.
-- [ ] Build and install a debug APK on an ARM64 Android device.
+## Phase 1 — Android editor foundation
+- [x] Product goals and platform constraints.
+- [x] Editor/runtime/platform architecture.
+- [x] Initial .NET Android application project.
+- [x] Hierarchy, Inspector and wireframe Scene Preview shell.
+- [x] Local scene JSON persistence.
+- [x] Project, C# source and Console docks.
+- [x] GitHub Actions ARM64 APK workflow added.
+- [ ] CI build passes and APK artifact is verified.
+- [ ] Install and launch on a physical ARM64 phone.
 
-**Exit gate:** clean CI build plus successful installation and launch on a physical Android device.
+**Exit gate:** successful CI build, downloadable APK and physical-device launch.
 
-## Phase 2 — Editor shell
-- [ ] Dark editor theme and responsive landscape layout.
-- [ ] Hierarchy, Scene/Game tabs, Inspector, Project and Console panels.
-- [ ] Play/Pause/Step toolbar with real state transitions.
-- [ ] Touch-friendly panel drawers and splitters.
-- [ ] Project create/open/save.
+## Phase 2 — Real editor interaction
+- [ ] Responsive panel drawers and tablet layout.
+- [ ] Create/open/rename projects and scenes.
+- [ ] Parent/child hierarchy and drag reorder.
+- [ ] Complete transform editor (position, rotation, scale).
+- [ ] Component add/remove and editable properties.
+- [ ] Autosave, undo/redo and recovery.
 
-**Exit gate:** create a project, add objects, save, close and reopen without losing the scene.
-
-## Phase 3 — Scene editing and rendering
-- [ ] Android GPU surface and render loop.
-- [ ] 2D sprite and 3D cube.
-- [ ] Orbit, pan and pinch camera controls.
-- [ ] Selection and raycasting.
+## Phase 3 — Rendering
+- [ ] OpenGL ES 3.x surface and render loop.
+- [ ] Real 3D cube and 2D sprite rendering.
+- [ ] Perspective/orthographic cameras and depth.
+- [ ] Orbit, pan, pinch zoom and raycast selection.
 - [ ] Move/Rotate/Scale gizmos.
-- [ ] Grid, camera and lighting basics.
+- [ ] Mesh, texture, material and light import.
 
-**Exit gate:** user can create and transform scene objects with touch input and see actual rendered output.
+**Exit gate:** touch-edit a scene and see actual GPU-rendered output.
 
-## Phase 4 — Runtime and components
-- [ ] Entity/component/transform model.
-- [ ] Parent-child hierarchy and world transforms.
-- [ ] Awake/Start/Update/FixedUpdate lifecycle.
+## Phase 4 — Game runtime
+- [ ] Entity/component/transform runtime.
+- [ ] Parent-child world transforms.
+- [ ] Awake, Start, Update, FixedUpdate and OnDestroy lifecycle.
+- [ ] Real Play/Pause/Step/Stop simulation.
 - [ ] Play-mode scene clone and restore.
 - [ ] Prefabs and scene serialization.
 
-**Exit gate:** a sample scene plays, pauses, stops and restores edit-time state.
+## Phase 5 — C# and C++
+- [ ] Choose and test a C# scripting strategy on ARM64 Android.
+- [ ] Script editor syntax highlighting and diagnostics.
+- [ ] Script-to-component workflow and API documentation.
+- [ ] Android NDK build for arm64-v8a.
+- [ ] Versioned JNI/C ABI and sample native module.
+- [ ] Permission prompts and safe native build isolation.
 
-## Phase 5 — Scripting
-- [ ] Device-tested C# script execution strategy.
-- [ ] Code editor with syntax highlighting and diagnostics.
-- [ ] Component reflection/metadata inspector.
-- [ ] C++ NDK module sample and ABI bridge.
-- [ ] Explicit permissions and safe build workflow for native code.
-
-**Exit gate:** documented sample C# behavior and sample C++ native module run on supported ARM64 hardware.
+C# source editing is not script execution; C++ source storage is not native compilation. These remain separate acceptance tests.
 
 ## Phase 6 — Game systems
 - [ ] 2D physics and collision.
-- [ ] 3D physics integration.
+- [ ] 3D physics.
 - [ ] Audio sources, listener and mixer.
-- [ ] Materials, textures and lighting.
 - [ ] Animation and input mapping.
 - [ ] Visual scripting.
+- [ ] Asset importer, materials, prefabs and packages.
 
-**Exit gate:** playable 2D and 3D sample projects with repeatable tests.
-
-## Phase 7 — Android export
+## Phase 7 — Android game export
 - [ ] Build settings and application metadata.
 - [ ] Asset dependency collection.
-- [ ] ABI and minimum Android API validation.
-- [ ] APK packaging and signing configuration.
-- [ ] Install/run exported APK on a second device.
-
-**Exit gate:** exported APK launches independently and runs the created game.
+- [ ] ABI and Android API validation.
+- [ ] Reproducible APK packaging and signing.
+- [ ] Install exported game on a second device.
 
 ## Device test matrix
-
-At minimum test:
 - ARM64 Android phone with limited memory.
 - Mid-range ARM64 phone.
 - Android tablet or large-screen emulator.
-- Pause/resume, rotation, low-storage and GPU-surface recreation.
+- Pause/resume, rotation, low storage and GPU surface recreation.
