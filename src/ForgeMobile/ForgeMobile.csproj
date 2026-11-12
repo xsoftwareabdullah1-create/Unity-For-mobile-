@@ -13,4 +13,8 @@
     <AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>
     <RuntimeIdentifiers>android-arm64</RuntimeIdentifiers>
   </PropertyGroup>
+  <ItemGroup>
+    <!-- Compile the 90 actual feature modules kept at repository root. -->
+    <Compile Include="../../*.cs" Link="RootFeatures/%(Filename)%(Extension)" />
+  </ItemGroup>
 </Project>
