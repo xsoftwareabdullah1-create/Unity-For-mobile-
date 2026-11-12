@@ -57,9 +57,21 @@ public sealed class MainActivity : Activity
 
     private void BuildEditor()
     {
+        // The complete editor is inside one vertical scroller so small phone screens
+        // can move from the top toolbars down to the project/console dock.
+        var pageScroll = new ScrollView(this)
+        {
+            FillViewport = false,
+            ScrollBarStyle = ScrollbarStyles.InsideInset,
+            VerticalScrollBarEnabled = true,
+            SmoothScrollingEnabled = true
+        };
+        pageScroll.SetBackgroundColor(_bg);
         var root = new LinearLayout(this) { Orientation = Orientation.Vertical };
         root.SetBackgroundColor(_bg);
-        SetContentView(root);
+        root.SetPadding(Dp(4), Dp(4), Dp(4), Dp(12));
+        pageScroll.AddView(root, new ScrollView.LayoutParams(-1, -2));
+        SetContentView(pageScroll);
 
         // Unity-inspired desktop editor chrome: menu, transport, tool strip and docked panels.
         var menu = new LinearLayout(this) { Orientation = Orientation.Horizontal };
@@ -70,7 +82,7 @@ public sealed class MainActivity : Activity
         foreach (var item in new[] { "File", "Edit", "Assets", "GameObject", "Component", "Window", "Help" })
             menu.AddView(Button(item, () => OpenMenu(item)), new LinearLayout.LayoutParams(-2, Dp(27)) { RightMargin = Dp(2) });
         menu.AddView(Label("Clear Game Engine  •  Android Editor", 9, _muted), new LinearLayout.LayoutParams(0, Dp(30), 1));
-        root.AddView(menu, new LinearLayout.LayoutParams(-1, Dp(31)));
+        root.AddView(menu, new LinearLayout.LayoutParams(-1, Dp(38)));
 
         var transport = new LinearLayout(this) { Orientation = Orientation.Horizontal };
         transport.SetGravity(GravityFlags.CenterVertical);
@@ -87,7 +99,7 @@ public sealed class MainActivity : Activity
         transport.AddView(Button("SAVE", Save), Wrap());
         transport.AddView(new View(this), new LinearLayout.LayoutParams(0, 1, 1));
         transport.AddView(Label("LAYOUT: DEFAULT", 9, _muted), Wrap());
-        root.AddView(transport, new LinearLayout.LayoutParams(-1, Dp(39)));
+        root.AddView(transport, new LinearLayout.LayoutParams(-1, Dp(46)));
 
         var toolStrip = new LinearLayout(this) { Orientation = Orientation.Horizontal };
         toolStrip.SetGravity(GravityFlags.CenterVertical);
@@ -98,10 +110,10 @@ public sealed class MainActivity : Activity
         toolStrip.AddView(new View(this), new LinearLayout.LayoutParams(0, 1, 1));
         toolStrip.AddView(Button("DUPLICATE", DuplicateSelected), Wrap());
         toolStrip.AddView(Button("DELETE", DeleteSelected), Wrap());
-        root.AddView(toolStrip, new LinearLayout.LayoutParams(-1, Dp(35)));
+        root.AddView(toolStrip, new LinearLayout.LayoutParams(-1, Dp(42)));
 
         var workspace = new LinearLayout(this) { Orientation = Orientation.Horizontal };
-        root.AddView(workspace, new LinearLayout.LayoutParams(-1, 0, 1));
+        root.AddView(workspace, new LinearLayout.LayoutParams(-1, Dp(470)));
 
         var hierarchyPanel = Panel("HIERARCHY");
         hierarchyPanel.AddView(Button("＋  CREATE", () => AddObject("GameObject", "Empty")), new LinearLayout.LayoutParams(-1, Dp(30)));
@@ -109,7 +121,7 @@ public sealed class MainActivity : Activity
         var hierarchyScroll = new ScrollView(this);
         hierarchyScroll.AddView(_hierarchyList);
         hierarchyPanel.AddView(hierarchyScroll, new LinearLayout.LayoutParams(-1, 0, 1));
-        workspace.AddView(hierarchyPanel, new LinearLayout.LayoutParams(Dp(158), -1));
+        workspace.AddView(hierarchyPanel, new LinearLayout.LayoutParams(Dp(190), -1));
 
         var center = new LinearLayout(this) { Orientation = Orientation.Vertical };
         var viewTabs = new LinearLayout(this) { Orientation = Orientation.Horizontal };
@@ -139,7 +151,7 @@ public sealed class MainActivity : Activity
         var inspectorScroll = new ScrollView(this);
         inspectorScroll.AddView(_inspector);
         inspectorPanel.AddView(inspectorScroll, new LinearLayout.LayoutParams(-1, 0, 1));
-        workspace.AddView(inspectorPanel, new LinearLayout.LayoutParams(Dp(285), -1));
+        workspace.AddView(inspectorPanel, new LinearLayout.LayoutParams(Dp(320), -1));
 
         var dock = new LinearLayout(this) { Orientation = Orientation.Vertical };
         dock.SetBackgroundColor(Color.Rgb(25, 29, 37));
@@ -152,8 +164,8 @@ public sealed class MainActivity : Activity
         dockTabs.AddView(Label("＋   ⋮", 12, _muted), new LinearLayout.LayoutParams(Dp(44), Dp(31)));
         dock.AddView(dockTabs, new LinearLayout.LayoutParams(-1, Dp(32)));
         _dockContent = new LinearLayout(this) { Orientation = Orientation.Vertical };
-        dock.AddView(_dockContent, new LinearLayout.LayoutParams(-1, Dp(148)));
-        root.AddView(dock, new LinearLayout.LayoutParams(-1, Dp(180)));
+        dock.AddView(_dockContent, new LinearLayout.LayoutParams(-1, Dp(172)));
+        root.AddView(dock, new LinearLayout.LayoutParams(-1, Dp(205)));
 
         RefreshHierarchy();
         RefreshInspector();
