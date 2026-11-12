@@ -46,7 +46,8 @@ public sealed class SceneObject
     public bool Enabled { get; set; } = true;
     public string Tag { get; set; } = "Untagged";
     public string Layer { get; set; } = "Default";
-    public bool IsStatic { get; set; }\n    public Dictionary<string, string> Metadata { get; set; } = new();
+    public bool IsStatic { get; set; }
+    public Dictionary<string, string> Metadata { get; set; } = new();
     public string ParentId { get; set; } = "";
     public TransformData Transform { get; set; } = new();
     public List<string> Components { get; set; } = new();
