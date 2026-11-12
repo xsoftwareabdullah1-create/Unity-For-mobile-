@@ -509,4 +509,3 @@ public sealed class MainActivity : Activity
         else { Save(); base.OnBackPressed(); }
     }
 }
-}
