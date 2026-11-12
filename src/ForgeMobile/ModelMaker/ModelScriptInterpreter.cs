@@ -33,5 +33,5 @@ public sealed class ModelScriptInterpreter
   }
   return output;
  }
- public const string StarterScript="# Create a small robot\ncube Body\nscale Body 1 1.4 0.6\nsphere Head\nmove Head 0 1.2 0\ncube LeftArm\nmove LeftArm -0.8 0.2 0\ncube RightArm\nmove RightArm 0.8 0.2 0";
+ public static string StarterScript=>string.Join((char)10,new[]{"# Create a small robot","cube Body","scale Body 1 1.4 0.6","sphere Head","move Head 0 1.2 0","cube LeftArm","move LeftArm -0.8 0.2 0","cube RightArm","move RightArm 0.8 0.2 0"});
 }
