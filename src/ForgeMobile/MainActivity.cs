@@ -252,11 +252,26 @@ public sealed class MainActivity : Activity
         _dockContent.RemoveAllViews();
         if (tab == "PROJECT")
         {
-            var folders = new LinearLayout(this) { Orientation = Orientation.Horizontal };
-            foreach (var folder in new[] { "Scenes", "Scripts", "Assets", "Native" })
-                folders.AddView(Label("▣ " + folder, 11, _text), new LinearLayout.LayoutParams(0, Dp(40), 1));
-            _dockContent.AddView(folders);
-            _dockContent.AddView(Label("MyFirstGame  /  " + string.Join("   ", _store.ListScripts()), 10, _muted));
+            var pathBar = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+            pathBar.SetGravity(GravityFlags.CenterVertical);
+            pathBar.SetPadding(Dp(7), 0, Dp(7), 0);
+            pathBar.AddView(Label("Assets   ▸   MyFirstGame", 10, _muted), new LinearLayout.LayoutParams(0, Dp(26), 1));
+            pathBar.AddView(Button("＋ FOLDER", () => Log("Folder creation panel coming next")), Wrap());
+            pathBar.AddView(Button("IMPORT", () => Log("Asset import is planned")), Wrap());
+            _dockContent.AddView(pathBar, new LinearLayout.LayoutParams(-1, Dp(28)));
+            var assetGrid = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+            assetGrid.SetPadding(Dp(8), Dp(2), Dp(8), 0);
+            foreach (var asset in new[] { ("▧", "Scenes"), ("▣", "Materials"), ("◩", "Models"), ("▤", "Textures"), ("♫", "Audio"), ("C#", "Scripts"), ("CPP", "Native") })
+            {
+                var tile = new LinearLayout(this) { Orientation = Orientation.Vertical };
+                tile.SetGravity(GravityFlags.Center);
+                tile.SetPadding(Dp(5), Dp(2), Dp(5), Dp(2));
+                tile.AddView(Label(asset.Item1, 20, Color.Rgb(155, 181, 211), true), new LinearLayout.LayoutParams(Dp(50), Dp(42)));
+                tile.AddView(Label(asset.Item2, 9, _text), new LinearLayout.LayoutParams(Dp(58), Dp(20)));
+                assetGrid.AddView(tile, new LinearLayout.LayoutParams(Dp(66), Dp(67)));
+            }
+            _dockContent.AddView(assetGrid, new LinearLayout.LayoutParams(-1, Dp(76)));
+            _dockContent.AddView(Label("  MyFirstGame  •  " + string.Join("   ", _store.ListScripts()), 9, _muted));
         }
         else if (tab == "SCRIPTS")
         {
