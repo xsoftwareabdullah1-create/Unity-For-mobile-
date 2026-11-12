@@ -81,7 +81,7 @@ public sealed class ModelMakerActivity:Activity
             .SetPositiveButton("RUN",(s,e)=>
             {
                 try { new ModelScriptInterpreter().Execute(input.Text??"",_meshes); _selected=_meshes.Count-1; Refresh(); UpdateStatus("Model script executed"); }
-                catch(Exception ex) { UpdateStatus("Script error: "+ex.Message); new AlertDialog.Builder(this).SetTitle("Script error").SetMessage(ex.Message).SetPositiveButton("OK",null).Show(); }
+                catch(Exception ex) { UpdateStatus("Script error: "+ex.Message); new AlertDialog.Builder(this).SetTitle("Script error").SetMessage(ex.Message).SetPositiveButton("OK",(s,e)=>{}).Show(); }
             }).Show();
     }
 
@@ -90,12 +90,12 @@ public sealed class ModelMakerActivity:Activity
         var input=new EditText(this){Hint="Ask about topology, UVs, robots, mobile optimization..."};
         new AlertDialog.Builder(this).SetTitle("Clear Modeling Guide • Offline")
             .SetMessage("Curated 3D modeling knowledge. No internet or API key required.")
-            .SetView(input).SetNegativeButton("CLOSE",null)
+            .SetView(input).SetNegativeButton("CLOSE",(s,e)=>{})
             .SetPositiveButton("ASK",(s,e)=>
             {
                 var reply=new LocalModelingAssistant().Ask(input.Text??"");
                 var message=reply.Text+(reply.Script is null?"":"\n\nSuggested modeling code:\n"+reply.Script);
-                new AlertDialog.Builder(this).SetTitle("Modeling Guide • "+reply.Topic).SetMessage(message).SetPositiveButton("OK",null).Show();
+                new AlertDialog.Builder(this).SetTitle("Modeling Guide • "+reply.Topic).SetMessage(message).SetPositiveButton("OK",(s,e)=>{}).Show();
             }).Show();
     }
 
