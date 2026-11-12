@@ -213,7 +213,8 @@ public sealed class MainActivity : Activity
 
     private void AxisRow(string axis, EditText field)
     {
-        var row = new LinearLayout(this) { Orientation = Orientation.Horizontal };\n        row.SetGravity(GravityFlags.CenterVertical);
+        var row = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+        row.SetGravity(GravityFlags.CenterVertical);
         row.AddView(Label(axis, 11, _muted, true), new LinearLayout.LayoutParams(Dp(22), Dp(34)));
         row.AddView(field, new LinearLayout.LayoutParams(0, Dp(34), 1));
         _inspector.AddView(row, new LinearLayout.LayoutParams(-1, Dp(37)));
