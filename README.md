@@ -10,8 +10,8 @@ It is an independent project, not Unity or Blender, and it does not contain thei
 - Create, select, duplicate and delete scene objects.
 - Edit object name, tag, layer, custom metadata, active/static flags and transforms.
 - Save scenes locally as JSON.
+- A first Model Maker screen with cube, UV sphere and plane primitives, a touch-orbit wireframe preview, basic scale/rotation controls, and OBJ/STL export.
 - Engine foundations for scene data, mesh data, camera maths, basic physics data, asset indexing and a restricted safe script VM.
-- A first Model Maker workspace is being added for primitive meshes and OBJ/STL export.
 
 ## Android downloads
 
@@ -31,7 +31,7 @@ dotnet publish src/ForgeMobile/ForgeMobile.csproj -c Release -f net10.0-android 
 
 ## Model and game exports
 
-The first model tool supports OBJ and ASCII STL. glTF/GLB, FBX and PLY need their own tested serializers and are not advertised as available yet.
+The Model Maker currently exports OBJ and ASCII STL. glTF/GLB, FBX and PLY need their own tested serializers and are not available yet.
 
 Windows EXE, macOS DMG, Linux packages and WebAssembly game exports are not available from this Android-only project. Those need desktop/web runtime targets, platform toolchains, packaging and tests. An editor APK is not a universal game exporter.
 
@@ -41,6 +41,6 @@ I am not adding filler files or fake assets to force the APK to 200–250 MB. Th
 
 ## What is still unfinished
 
-The Scene View is currently a Canvas preview, not a production OpenGL ES renderer. The safe script VM is not a full C# compiler. The C++ JNI sample is not an in-app C++ build pipeline. Physics, audio and animation are foundations rather than full Unity-equivalent systems.
+The Scene View is currently a Canvas preview, not a production OpenGL ES renderer. The Model Maker is a primitive-mesh MVP, not Blender-level modelling software. The safe script VM is not a full C# compiler. The C++ JNI sample is not an in-app C++ build pipeline. Physics, audio and animation are foundations rather than full Unity-equivalent systems.
 
 The plan is to keep each milestone buildable and test real features as they are added.
