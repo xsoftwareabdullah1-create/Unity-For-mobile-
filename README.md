@@ -6,9 +6,9 @@ It is an independent project, not Unity or Blender, and it does not contain thei
 
 ## Repository layout
 
-The repository root now contains 90 files: the README, `.gitignore`, and 88 numbered engine-module notes. They are intentionally at the top level as requested. The module notes describe planned contracts and acceptance checks; they are not 88 completed engine implementations.
+The repository root contains 90 C# feature-module source files: `FeatureModuleBase.cs` plus 89 named feature modules. These are real compiled C# modules, kept directly at the repository root as requested. Each module exposes a validated settings contract (budget and quality) that can be inspected, configured and serialized by the editor. They are feature integration points, not claims that every corresponding full engine subsystem is already production-complete. The older numbered Markdown notes are planning documents only.
 
-## What currently works
+## Root-level feature modules\n\nThe 90 root-level C# files cover scene graph, transforms, ECS, serialization, hierarchy, Inspector, assets, mesh/model tools, camera/gizmos, OpenGL ES backend configuration, shaders, lighting, physics, animation, audio, input, C#/C++ bridges, visual scripting, profiling, build pipeline and Android/Windows/macOS/Linux/Web export targets. The project file explicitly compiles these root-level `.cs` files into the Android editor.\n\n## What currently works
 
 - Landscape editor with Hierarchy, Scene, Inspector, Project, Console and script panels.
 - Create, select, duplicate and delete scene objects.
