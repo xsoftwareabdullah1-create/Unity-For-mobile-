@@ -41,13 +41,18 @@ public sealed class MainActivity : Activity
         base.OnCreate(savedInstanceState);
         Window?.SetStatusBarColor(Color.Rgb(12, 15, 21));
         Window?.SetNavigationBarColor(Color.Rgb(12, 15, 21));
-        _store = new ProjectStore(FilesDir!.AbsolutePath);
-        _store.EnsureProject();
-        _scene = _store.LoadScene();
-        _selectedId = _scene.Objects.LastOrDefault()?.Id ?? "";
-        BuildEditor();
-        Log("Clear Game Engine editor initialized.");
-        Log("Project: MyFirstGame");
+        EngineSplashScreen.Show(this, "MyFirstGame");
+        new Handler(Looper.MainLooper!).PostDelayed(() =>
+        {
+            _store = new ProjectStore(FilesDir!.AbsolutePath);
+            _store.EnsureProject();
+            _scene = _store.LoadScene();
+            _selectedId = _scene.Objects.LastOrDefault()?.Id ?? "";
+            BuildEditor();
+            Log("Clear Game Engine editor initialized.");
+            Log("Project: MyFirstGame");
+            Log("Tip: open Model Maker for code-to-3D and the offline modeling guide.");
+        }, 850);
     }
 
     private void BuildEditor()
