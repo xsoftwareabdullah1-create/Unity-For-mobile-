@@ -4,6 +4,10 @@ This is my Android-first game editor project. I want the workspace to feel famil
 
 It is an independent project, not Unity or Blender, and it does not contain their proprietary code or assets.
 
+## Repository layout
+
+The repository root now contains 90 files: the README, `.gitignore`, and 88 numbered engine-module notes. They are intentionally at the top level as requested. The module notes describe planned contracts and acceptance checks; they are not 88 completed engine implementations.
+
 ## What currently works
 
 - Landscape editor with Hierarchy, Scene, Inspector, Project, Console and script panels.
