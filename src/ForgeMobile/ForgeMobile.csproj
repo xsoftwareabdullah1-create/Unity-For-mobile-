@@ -9,12 +9,14 @@
     <ApplicationDisplayVersion>0.1.0</ApplicationDisplayVersion>
     <SupportedOSPlatformVersion>23.0</SupportedOSPlatformVersion>
     <Nullable>enable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <ImplicitUsings>enable</ImplicitUsings>
     <AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>
     <RuntimeIdentifiers>android-arm64</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup>
     <!-- Compile the 90 actual feature modules kept at repository root. -->
+    <Compile Include="**/*.cs" Exclude="bin/**;obj/**" />
     <Compile Include="../../*.cs" Link="RootFeatures/%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup><Compile Include="../../*.cs" Link="RootFeatures/%(Filename)%(Extension)" /></ItemGroup>
