@@ -19,5 +19,4 @@
     <Compile Include="**/*.cs" Exclude="bin/**;obj/**" />
     <Compile Include="../../*.cs" Link="RootFeatures/%(Filename)%(Extension)" />
   </ItemGroup>
-  <ItemGroup><Compile Include="../../*.cs" Link="RootFeatures/%(Filename)%(Extension)" /></ItemGroup>
 </Project>
